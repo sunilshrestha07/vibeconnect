@@ -2,6 +2,6 @@ import React from 'react'
 
 export default function page() {
   return (
-    <div>This is main page</div>
+    <div>This is message page</div>
   )
 }
