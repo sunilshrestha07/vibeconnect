@@ -1,42 +1,44 @@
-'use client';
+// app/(auth)/login/page.tsx
+'use client'; // This line should be included to enable client-side functionality
 
+import { setAuthenticated, setUnauthenticated } from '@/app/redux/authSlice';
 import { loginSuccess } from '@/app/redux/UserSlice';
 import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-export default function page() {
+export default function Page() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
-  //handel login
-  const handelLogin = async () => {
-    const formdata = {
-      email,
-      password,
-    };
+  const router = useRouter();
+
+  // Handle login
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = { email, password };
     try {
-      const res = await axios.post('/api/user/login', formdata);
+      const res = await axios.post('/api/user/login', formData);
       if (res.status === 200) {
-        console.log(res.data.user);
         dispatch(loginSuccess(res.data.user));
+        router.push('/');
       }
-    } catch (error :any) {
-      console.log(`Error login in ${error.message}`);
+    } catch (error: any) {
+      console.error(`Error logging in: ${error.message}`);
     }
   };
+
   return (
     <div className="flex w-full h-full bg-gray-50">
       <div className="flex flex-1 flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <div className="text-center">
-            <h1 className="text-4xl font-semibold text-gray-900 mb-8 font-Italianno">
-              Vibeconnect
-            </h1>
+            <h1 className="text-4xl font-semibold text-gray-900 mb-8 font-Italianno">Vibeconnect</h1>
           </div>
-          <form className="space-y-6" onClick={handelLogin}>
+          <form className="space-y-6" onSubmit={handleLogin}>
             <input
               type="text"
               placeholder="Email"
@@ -69,37 +71,23 @@ export default function page() {
             </div>
             <div className="mt-6">
               <button className="w-full border border-gray-400 flex items-center justify-center space-x-2 py-2 px-4 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                <Image
-                  src="/icons/google.png"
-                  alt="Google"
-                  width={20}
-                  height={20}
-                />
-                <span className="text-sm font-semibold text-blue-900">
-                  Log in with Google
-                </span>
+                <Image src="/icons/google.png" alt="Google" width={20} height={20} />
+                <span className="text-sm font-semibold text-blue-900">Log in with Google</span>
               </button>
             </div>
           </div>
           <div className="mt-6 text-center">
-            <Link href="#" className="text-sm text-blue-600 hover:underline">
-              Forgot password?
-            </Link>
+            <Link href="#" className="text-sm text-blue-600 hover:underline">Forgot password?</Link>
           </div>
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{' '}
-              <Link
-                href="#"
-                className="font-semibold text-blue-600 hover:underline"
-              >
-                Sign up
-              </Link>
+              <Link href="#" className="font-semibold text-blue-600 hover:underline">Sign up</Link>
             </p>
           </div>
         </div>
       </div>
-      <div className=" lg:block hidden ml-8">
+      <div className="lg:block hidden ml-8">
         <img className="w-full h-full object-cover" src="/iphone.png" alt="" />
       </div>
     </div>

@@ -4,10 +4,8 @@ import React from 'react'
 export default function page() {
   return (
     <>
-    <div className="w-full ">
-      <div className="">
-        <Story/>
-      </div>
+    <div className="w-full">
+      <Story/>
     </div>
     </>
   )

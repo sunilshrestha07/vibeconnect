@@ -47,6 +47,7 @@ export async function POST(request: Request) {
       message: 'user logined in successfully',
       success: true,
       user: rest,
+      token: token,
     });
 
     response.cookies.set('token', token, {
