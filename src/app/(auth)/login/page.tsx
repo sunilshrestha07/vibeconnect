@@ -1,8 +1,9 @@
-// app/(auth)/login/page.tsx
-'use client'; // This line should be included to enable client-side functionality
+
+'use client'; 
 
 import { setAuthenticated, setUnauthenticated } from '@/app/redux/authSlice';
 import { loginSuccess } from '@/app/redux/UserSlice';
+import Oauth from '@/components/Oauth';
 import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -15,18 +16,22 @@ export default function Page() {
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   // Handle login
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
     const formData = { email, password };
     try {
       const res = await axios.post('/api/user/login', formData);
       if (res.status === 200) {
         dispatch(loginSuccess(res.data.user));
         router.push('/');
+        setIsLoading(false);
       }
     } catch (error: any) {
+      setIsLoading(false);
       console.error(`Error logging in: ${error.message}`);
     }
   };
@@ -57,7 +62,11 @@ export default function Page() {
               type="submit"
               className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
-              Log in
+              {isLoading ? (
+                <div className="loader"></div>
+              ):(
+                <p>Log in</p>
+              )}
             </button>
           </form>
           <div className="mt-6">
@@ -70,10 +79,7 @@ export default function Page() {
               </div>
             </div>
             <div className="mt-6">
-              <button className="w-full border border-gray-400 flex items-center justify-center space-x-2 py-2 px-4 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                <Image src="/icons/google.png" alt="Google" width={20} height={20} />
-                <span className="text-sm font-semibold text-blue-900">Log in with Google</span>
-              </button>
+              <Oauth/>
             </div>
           </div>
           <div className="mt-6 text-center">

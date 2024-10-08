@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import User from '@/models/userModel';
 import { sendMail } from '@/utils/SendMail';
+import jwt from 'jsonwebtoken'
 
 export async function POST(request: Request) {
   await dbConnect();
@@ -19,66 +20,64 @@ export async function POST(request: Request) {
 
     const user = await User.findOne({ email });
 
-    // Check if the user exists and is verified
-    if (user && user.isVerified) {
-      return NextResponse.json(
-        { success: false, message: 'User already exists and is verified' },
-        { status: 400 }
+    if (user) {
+      //send all info of the user except the password
+      const { password: pass, ...rest } = user.toObject();
+
+      const token = jwt.sign(
+        { userId: user._id },
+        process.env.JWT_SECRET!,
+        { expiresIn: '20d' }
       );
-    }
-
-    // If the user exists but is not verified, proceed to update verification details
-    if (user && !user.isVerified) {
-      user.userName = userName;
-      user.password = await bcrypt.hash(userName, 10);
-      user.verificationCode = generateVerificationCode();
-      user.verificationExpires = Date.now() + 180000; // 3 minutes
-
-      await user.save();
-      await sendMail({
-        email,
-        userName,
-        verificationCode: user.verificationCode,
+      const response = NextResponse.json({
+        message: 'user logined in successfully',
+        success: true,
+        user: rest,
       });
 
-      return NextResponse.json(
-        {
-          success: true,
-          message: 'User updated with new verification code',
-          user,
-        },
-        { status: 200 }
-      );
+      response.cookies.set('token', token, {
+        httpOnly: true,
+        maxAge: 200 * 60 * 60,
+      });
+
+      return response;
     }
 
     // If the user does not exist, create a new user
     const newUser = new User({
       userName,
       email,
+      avatar,
       password: await bcrypt.hash(userName, 10),
-      verificationCode: generateVerificationCode(),
-      verificationExpires: Date.now() + 180000, // 3 minutes
+      isVerified: true
     });
 
     await newUser.save();
-    await sendMail({
-      email,
-      userName,
-      verificationCode: newUser.verificationCode,
-    });
+     //send all info of the user except the password
+     const { password: pass, ...rest } = newUser.toObject();
 
+     const token = jwt.sign(
+       { userId: newUser._id },
+       process.env.JWT_SECRET!,
+       { expiresIn: '20d' }
+     );
+     const response = NextResponse.json({
+       message: 'user logined in successfully',
+       success: true,
+       user: rest,
+     });
+ 
+     response.cookies.set('token', token, {
+       httpOnly: true,
+       maxAge: 200 * 60 * 60,
+     });
+ 
+     return response;
+  } catch (error :any) {
     return NextResponse.json(
-      { success: true, message: 'User created successfully', user: newUser },
-      { status: 200 }
-    );
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, message: 'Error creating user', error },
+      { success: false, message: `Error creating user ${error.message}`, error },
       { status: 500 }
     );
   }
 }
 
-function generateVerificationCode() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}

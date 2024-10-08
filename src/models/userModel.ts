@@ -19,15 +19,12 @@ const UserSchema = new mongoose.Schema({
     },
     verificationCode: {
         type: String,
-        required: true
     },
     verificationExpires: {
         type: Date,
-        required: true
     },
     avatar: {
         type: String,
-        default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeONWylK6HlbseMI4SJmyUvVff9KNxARyjww&s"
     }
 },{timestamps: true})
 

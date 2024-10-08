@@ -37,12 +37,12 @@ export default function RootLayout({
                 </div>
 
                 {/* Main content */}
-                <div className="w-full h-screen bg-gray-200 col-span-11 sm:col-span-10 xl:col-span-9 px-2 sm:px-4 grid grid-cols-8 overflow-auto">
-                  <div className="w-full h-full col-span-8 xl:col-span-5 sm:pr-5 overflow-y-auto">
+                <div className="w-full h-screen bg-gray-200 col-span-11 sm:col-span-10 xl:col-span-9  grid grid-cols-8 overflow-auto">
+                  <div className={`${pathname === "/create" ? "w-full h-full col-span-8 ":"w-full h-full col-span-8 xl:col-span-5 sm:pr-5 overflow-y-auto px-2 sm:px-4"}`}>
                     {children} {/* Page content will be rendered here */}
                   </div>
 
-                  <div className="w-full h-full bg-gray-200 hidden xl:col-span-3 border-2 border-gray-400">
+                  <div className={`${pathname === "/create" ? "hidden":"w-full h-full col-span-3"}`}>
                     {/* Additional content */}
                   </div>
                 </div>

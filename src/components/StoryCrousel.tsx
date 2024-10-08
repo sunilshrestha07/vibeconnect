@@ -1,10 +1,10 @@
-import { StoryData } from '@/app/interface/interface.declare';
 import React, { useState, useEffect } from 'react';
+import { StoryData } from '@/app/interface/interface.declare';
 
 interface StoryCrouselProps {
   allstory: StoryData[];
-  selectedStoryId: number;
-  setSelectedStoryId: (id: number | null) => void;
+  selectedStoryId: string; // Change to string to reflect story id type
+  setSelectedStoryId: (id: string | null) => void; // Use string | null for the selected story id
 }
 
 export default function StoryCrousel({
@@ -14,20 +14,22 @@ export default function StoryCrousel({
 }: StoryCrouselProps) {
   const totalItems = allstory.length;
 
+  // Find the index of the currently selected story using its ID
   const selectedIndex = allstory.findIndex(
-    (story) => story.id === selectedStoryId
+    (story) => story._id === selectedStoryId // Use _id instead of id
   );
   const currentStory = allstory[selectedIndex];
 
   const handleNext = () => {
     const nextIndex = (selectedIndex + 1) % totalItems;
-    setSelectedStoryId(allstory[nextIndex].id);
+    setSelectedStoryId(allstory[nextIndex]._id); // Update selectedStoryId with the next story's ID
     setProgress(0); // Reset progress
+    console.log(nextIndex);
   };
 
   const handlePrevious = () => {
     const previousIndex = (selectedIndex - 1 + totalItems) % totalItems;
-    setSelectedStoryId(allstory[previousIndex].id);
+    setSelectedStoryId(allstory[previousIndex]._id); // Update selectedStoryId with the previous story's ID
     setProgress(0); // Reset progress
   };
 
@@ -96,9 +98,9 @@ export default function StoryCrousel({
 
         {/* story content */}
         <div className="w-full h-screen  ">
-          <div className="w-full h-full overflow-hidden">
+          <div className="w-full h-full overflow-hidden bg-gray-200">
             <img
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               src={currentStory.media.url}
               alt="Story content"
             />
@@ -144,7 +146,11 @@ export default function StoryCrousel({
           </div>
           <div className="w-[20%] flex justify-center mt-3">
             <div className="">
-              <img className="w-9 cursor-pointer" src="/icons/like.png" alt="Like" />
+              <img
+                className="w-9 cursor-pointer"
+                src="/icons/like.png"
+                alt="Like"
+              />
             </div>
           </div>
         </div>
