@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { StoryData } from '@/app/interface/interface.declare';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/app/redux/store';
 
 interface StoryCrouselProps {
-  allstory: StoryData[];
   selectedStoryId: string; // Change to string to reflect story id type
   setSelectedStoryId: (id: string | null) => void; // Use string | null for the selected story id
 }
 
 export default function StoryCrousel({
-  allstory,
   selectedStoryId,
   setSelectedStoryId,
 }: StoryCrouselProps) {
+  const allstory = useSelector((state: RootState) => state.stories.stories);
   const totalItems = allstory.length;
 
   // Find the index of the currently selected story using its ID
@@ -100,7 +101,7 @@ export default function StoryCrousel({
         <div className="w-full h-screen  ">
           <div className="w-full h-full overflow-hidden bg-gray-200">
             <img
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover"
               src={currentStory.media.url}
               alt="Story content"
             />

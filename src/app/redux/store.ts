@@ -3,11 +3,13 @@ import storage from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
 import userReducer from './UserSlice'
 import authReducer from './authSlice'
+import storyReducer from './storySlice'
 
 // Combine your reducers into a root reducer
 const rootReducer = combineReducers({
     user: userReducer,
-    auth:authReducer
+    auth:authReducer,
+    stories:storyReducer
 });
 
 // Configuration for Redux Persist
