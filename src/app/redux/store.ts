@@ -4,12 +4,14 @@ import { persistReducer, persistStore } from 'redux-persist';
 import userReducer from './UserSlice'
 import authReducer from './authSlice'
 import storyReducer from './storySlice'
+import postReducer from './postSlice'
 
 // Combine your reducers into a root reducer
 const rootReducer = combineReducers({
     user: userReducer,
     auth:authReducer,
-    stories:storyReducer
+    stories:storyReducer,
+    posts: postReducer,
 });
 
 // Configuration for Redux Persist

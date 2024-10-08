@@ -1,7 +1,31 @@
+'use client';
+
+
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import React from 'react'
+import { useDispatch } from 'react-redux';
+import { logout } from '../redux/UserSlice';
 
 export default function page() {
+  const router = useRouter();
+  const dispatch = useDispatch()
+  const handelLogout = async() => {
+    try {
+      const res = await axios.post('/api/user/logout');
+      if (res.status === 200) {
+        dispatch(logout())
+        router.push('/login');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
   return (
-    <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque nam nisi vel cum quidem error amet repudiandae, facilis quasi a, alias beatae? Iste numquam ex at obcaecati fuga illo explicabo blanditiis ut dolorem deleniti, maxime repellat ea magni, rem sed. Possimus officiis molestias explicabo, magni ut exercitationem, dolorem minus dolor beatae minima numquam quas neque atque at quaerat id animi aliquid consectetur et alias aliquam necessitatibus veniam est doloremque. Facere consequatur nostrum aperiam? Quas quidem cum perspiciatis tenetur minima corrupti, molestias velit tempore doloremque recusandae eaque vitae? Ut unde totam enim eveniet reprehenderit illo in, ad, eligendi beatae voluptatem dolore dicta error distinctio harum amet velit aspernatur eius ullam. Odit, dolor iste optio rerum perspiciatis tenetur harum facere vero similique earum magni ut possimus accusantium culpa libero quia corrupti est reprehenderit nulla! Unde doloremque excepturi eum ex optio sint amet, exercitationem itaque ut in reprehenderit, ad dolorum ducimus voluptatem vero nulla inventore voluptates illo. Facilis quia commodi necessitatibus est debitis assumenda natus impedit corrupti. Repudiandae, facere sed? Nihil architecto inventore culpa et ad exercitationem est, vel voluptate quibusdam aliquam dolor accusamus? Recusandae repellendus quisquam, commodi enim libero magnam. Pariatur architecto unde, itaque debitis repellendus eaque? Autem quos iste ullam! Ratione, est dignissimos iste ea accusantium odit aspernatur labore dicta illum soluta corrupti facilis explicabo animi, maiores pariatur atque rerum. Corporis exercitationem debitis possimus atque natus, magni recusandae soluta dolorum iusto aliquam incidunt cumque aut eum iure enim officia, nesciunt asperiores. Nulla blanditiis unde ducimus iste quaerat accusamus vitae ipsam, facere quia odio exercitationem necessitatibus odit minima velit quam vero? Optio nulla cupiditate sit. Provident aspernatur magni, iure repellendus illo nobis perferendis eveniet consequatur nihil ab eligendi maxime iste laudantium quis debitis sed rem aliquid. Fugiat nulla doloribus explicabo repudiandae repellendus esse laudantium perspiciatis itaque at odit? Ut mollitia ab voluptatem ad voluptas impedit velit ex asperiores consequatur quod magnam, enim, eius, veniam consequuntur rerum? Dolor deleniti, eius repellat eos id enim nam in consequuntur. Animi quisquam at aspernatur ab corporis veritatis eaque voluptas molestias vero voluptates id beatae inventore perspiciatis, optio debitis cumque odio veniam. Omnis natus aliquam officia reiciendis, exercitationem quas animi, quisquam ullam ab nam autem expedita reprehenderit id enim numquam quia architecto rerum assumenda voluptates consectetur, modi nihil. Recusandae excepturi est aspernatur, praesentium voluptatem illo consequatur. Id voluptatibus, vero minus aperiam, esse vel corrupti, rerum delectus similique officiis rem molestias? Natus officia corporis sapiente saepe ipsum ratione eos, deserunt adipisci corrupti nostrum, enim nesciunt magni repellat numquam veniam! Ipsum ad, molestias maiores quam magnam sint veritatis neque, illum suscipit assumenda aut ea itaque non error commodi et nostrum. Modi aliquam dolores iste, quisquam reiciendis, doloremque possimus quo ducimus culpa labore odio laboriosam veniam asperiores molestiae eos deserunt! Error tenetur mollitia quaerat rem commodi, vero ut, corrupti dolore nesciunt incidunt culpa. Cum error sequi veniam nam adipisci veritatis quam! Tempora corrupti consequatur hic odio, architecto totam, numquam mollitia perspiciatis dolorum tenetur impedit maxime nihil reiciendis, dolore blanditiis dolores maiores alias! Maxime, repudiandae quidem aliquam consectetur minus dignissimos doloremque!</div>
+    <>
+    <div className=" flex items-center justify-center w-full h-full">
+      <button className='w-28 px-5 py-2 rounded-lg bg-slate-600 text-white' onClick={handelLogout}>Logout</button>
+    </div>
+    </>
   )
 }

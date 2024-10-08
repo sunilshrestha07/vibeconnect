@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       userName,
       email,
       avatar,
-      password: await bcrypt.hash(userName, 10),
+      password: await bcrypt.hash("password", 10),
       isVerified: true
     });
 

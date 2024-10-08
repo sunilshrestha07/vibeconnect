@@ -5,12 +5,17 @@ const postSchema = new mongoose.Schema(
     discription: {
       type: String,
     },
-    image: [
-      {
+    media:{
+      url: {
         type: String,
-        required: true,
+        required: true
       },
-    ],
+      type: {
+        type: String,
+        enum: ['image', 'video'],
+        required: true
+      },
+    },
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -23,7 +28,7 @@ const postSchema = new mongoose.Schema(
         ref: 'User',
       },
     ],
-    owner: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,

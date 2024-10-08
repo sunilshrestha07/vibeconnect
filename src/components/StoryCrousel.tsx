@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { StoryData } from '@/app/interface/interface.declare';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/redux/store';
 
 interface StoryCrouselProps {
-  selectedStoryId: string; // Change to string to reflect story id type
-  setSelectedStoryId: (id: string | null) => void; // Use string | null for the selected story id
+  selectedStoryId: string;
+  setSelectedStoryId: (id: string | null) => void;
 }
 
 export default function StoryCrousel({
@@ -15,27 +14,30 @@ export default function StoryCrousel({
   const allstory = useSelector((state: RootState) => state.stories.stories);
   const totalItems = allstory.length;
 
-  // Find the index of the currently selected story using its ID
   const selectedIndex = allstory.findIndex(
-    (story) => story._id === selectedStoryId // Use _id instead of id
+    (story) => story._id === selectedStoryId
   );
   const currentStory = allstory[selectedIndex];
 
+  const [comment, setComment] = useState<string>('');
+  const [progress, setProgress] = useState<number>(0);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+
   const handleNext = () => {
     const nextIndex = (selectedIndex + 1) % totalItems;
-    setSelectedStoryId(allstory[nextIndex]._id); // Update selectedStoryId with the next story's ID
-    setProgress(0); // Reset progress
-    console.log(nextIndex);
+    setSelectedStoryId(allstory[nextIndex]._id);
+    setProgress(0);
+    setIsLoaded(false); // Reset image load state for next image/video
   };
 
   const handlePrevious = () => {
     const previousIndex = (selectedIndex - 1 + totalItems) % totalItems;
-    setSelectedStoryId(allstory[previousIndex]._id); // Update selectedStoryId with the previous story's ID
-    setProgress(0); // Reset progress
+    setSelectedStoryId(allstory[previousIndex]._id);
+    setProgress(0);
+    setIsLoaded(false); // Reset image load state for previous image/video
   };
-
-  const [comment, setComment] = useState<string>('');
-  const [progress, setProgress] = useState<number>(0); // Track progress percentage
 
   const handelCommentSend = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,29 +45,52 @@ export default function StoryCrousel({
     setComment('');
   };
 
-  // Auto-change story every 5 seconds and show progress
+  // Preload next image to avoid flickering
   useEffect(() => {
-    const intervalTime = 50; // Update progress every 50ms
-    const progressStep = (intervalTime / 5000) * 100; // Calculate step size for 5 seconds (5000ms)
+    const nextStory = allstory[(selectedIndex + 1) % totalItems];
 
-    const timer = setInterval(() => {
-      setProgress((prevProgress) => {
-        if (prevProgress >= 100) {
-          handleNext(); // When progress reaches 100%, move to next story
-          return 0; // Reset progress for the next story
-        }
-        return prevProgress + progressStep;
-      });
-    }, intervalTime);
+    if (nextStory.media.type === 'image') {
+      const img = new Image();
+      img.src = nextStory.media.url;
+    }
+  }, [selectedIndex, allstory, totalItems]);
 
-    return () => clearInterval(timer); // Cleanup on unmount or when selectedStoryId changes
-  }, [selectedStoryId]);
+  // Handle progress for images and videos
+  useEffect(() => {
+    if (currentStory.media.type === 'image') {
+      const intervalTime = 50; // Update progress every 50ms
+      const progressStep = (intervalTime / 5000) * 100; // 5-second step size
+
+      const timer = setInterval(() => {
+        setProgress((prevProgress) => {
+          if (prevProgress >= 100) {
+            handleNext();
+            return 0;
+          }
+          return prevProgress + progressStep;
+        });
+      }, intervalTime);
+
+      return () => clearInterval(timer); // Cleanup on unmount or when story changes
+    } else if (currentStory.media.type === 'video' && videoRef.current) {
+      // Wait for the video to finish before moving to the next story
+      const video = videoRef.current;
+      const handleVideoEnd = () => handleNext();
+
+      video.addEventListener('ended', handleVideoEnd);
+      video.play();
+
+      return () => {
+        video.removeEventListener('ended', handleVideoEnd);
+      };
+    }
+  }, [selectedStoryId, currentStory]);
 
   return (
     <div className="w-full h-full overflow-hidden flex justify-center">
       {/* Current Story */}
       <div className="w-full sm:1/2 md:w-2/5 xl:w-1/3 h-full col-span-3 border-[1px] border-gray-600 relative">
-        {/* owner info */}
+        {/* Owner info */}
         <div className="">
           <div className="absolute top-2 left-2 flex gap-2 items-center">
             <div className="w-12 aspect-square rounded-full overflow-hidden">
@@ -89,22 +114,37 @@ export default function StoryCrousel({
           <img className="w-4" src="/left.png" alt="Previous" />
         </button>
 
-        {/* Progress bar */}
-        <div className="w-full h-1 bg-gray-300 absolute top-0 left-0">
-          <div
-            className="h-full bg-blue-500"
-            style={{ width: `${progress}%` }} // Dynamic width based on progress
-          ></div>
-        </div>
+        {/* Progress bar for images */}
+        {currentStory.media.type === 'image' && (
+          <div className="w-full h-1 bg-gray-300 absolute top-0 left-0">
+            <div
+              className="h-full bg-blue-500"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
+        )}
 
-        {/* story content */}
-        <div className="w-full h-screen  ">
+        {/* Story content */}
+        <div className="w-full h-screen">
           <div className="w-full h-full overflow-hidden bg-gray-200">
-            <img
-              className="w-full h-full object-cover"
-              src={currentStory.media.url}
-              alt="Story content"
-            />
+            {currentStory.media.type === 'image' ? (
+              <img
+                className="w-full h-full object-cover object-center"
+                src={currentStory.media.url}
+                alt="Story content"
+                onLoad={() => setIsLoaded(true)}
+                onError={() => setIsLoaded(false)}
+              />
+            ) : (
+              <video
+                ref={videoRef}
+                className="w-full h-full object-cover"
+                src={currentStory.media.url}
+                autoPlay
+                playsInline
+                preload='true'
+              />
+            )}
           </div>
         </div>
 
@@ -118,7 +158,7 @@ export default function StoryCrousel({
 
         {/* Close Button */}
         <button
-          className="absolute rounded-full top-4 right-4 "
+          className="absolute rounded-full top-4 right-4"
           onClick={() => setSelectedStoryId(null)} // Close the carousel
         >
           <div className="w-8 aspect-square overflow-hidden bg-white rounded-full p-1">
@@ -129,11 +169,12 @@ export default function StoryCrousel({
             />
           </div>
         </button>
-        {/* likestory and comment */}
-        <div className="w-full h-24 absolute bottom-20 sm:-bottom-6  left-0 justify-center bg-white  sm:py-0 flex gap-2  z-40">
+
+        {/* Like story and comment */}
+        <div className="w-full h-24 absolute bottom-20 sm:-bottom-6 left-0 justify-center bg-white sm:py-0 flex gap-2 z-40">
           <div className="w-[80%] px-4">
             <form onSubmit={handelCommentSend}>
-              <div className="w-full flex  gap-2 items-center border-2 border-black h-12 mt-3  rounded-3xl overflow-hidden">
+              <div className="w-full flex gap-2 items-center border-2 border-black h-12 mt-3 rounded-3xl overflow-hidden">
                 <input
                   className="w-10/12 h-full px-2 outline-none bg-transparent"
                   type="text"
@@ -147,11 +188,7 @@ export default function StoryCrousel({
           </div>
           <div className="w-[20%] flex justify-center mt-3">
             <div className="">
-              <img
-                className="w-9 cursor-pointer"
-                src="/icons/like.png"
-                alt="Like"
-              />
+              <img className="w-9 cursor-pointer" src="/icons/like.png" alt="Like" />
             </div>
           </div>
         </div>

@@ -2,12 +2,14 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from '../firebase';
-import { v4 } from "uuid";
+import { v4 } from 'uuid';
 import axios from 'axios';
+import { setPosts } from '../redux/postSlice';
+import { addStory, setStories } from '../redux/storySlice';
 
 export default function Page() {
   const mediaRef = useRef<HTMLInputElement>(null);
@@ -16,11 +18,15 @@ export default function Page() {
   const [selectedPostType, setSelectedPostType] = useState<string>('post'); // State for selected radio option
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const currentUserId = useSelector((state: RootState) => state.user.currentUser?._id);
+  const [discription, setDiscription] = useState<string>('');
+  const dispatch = useDispatch();
+  const currentUserId = useSelector(
+    (state: RootState) => state.user.currentUser?._id
+  );
 
   // Handle close
   const handleClose = () => {
-    router.replace('/');
+    router.push('/');
   };
 
   // Handle media selection
@@ -34,7 +40,7 @@ export default function Page() {
         video.onloadedmetadata = () => {
           if (video.duration <= 30) {
             setMedia(file);
-            setMediaUrl(URL.createObjectURL(file)); 
+            setMediaUrl(URL.createObjectURL(file));
           } else {
             alert('Video length should be less than 30 seconds.');
           }
@@ -81,19 +87,20 @@ export default function Page() {
           url: uploadedMediaUrl,
           type: media?.type === 'video/mp4' ? 'video' : 'image',
         },
+        discription: discription,
       };
 
-      // POST request to the backend API based on post type (post/reel/story)
+      // // POST request to the backend API based on post type (post/reel/story)
       const res = await axios.post(`/api/${selectedPostType}`, updatedFormData);
 
       if (res.status === 200) {
         alert('Post created successfully');
-        console.log(res.data);
-        setMedia(null); // Clear media after successful upload
-        setMediaUrl(null); // Clear media URL
-        router.replace('/'); // Navigate back or refresh after successful upload
+        if(selectedPostType === 'post') {
+          dispatch(setPosts(res.data.post))
+        }
+        dispatch(addStory(res.data.story))
+        console.log(updatedFormData)
       }
-      console.log(updatedFormData);
     } catch (error: any) {
       console.error(`Error creating post: ${error.message}`);
       alert('Error creating post. Please try again.');
@@ -135,6 +142,19 @@ export default function Page() {
                     )}
                   </div>
 
+                  {selectedPostType === 'post' && (
+                    <div className=" w-full">
+                      <input
+                        className="w-full p-2 text-black outline-none rounded-lg"
+                        type="text"
+                        name=""
+                        id=""
+                        placeholder="Caption"
+                        onChange={(e)=>setDiscription(e.target.value)}
+                      />
+                    </div>
+                  )}
+
                   <div className="flex justify-center mt-2">
                     <button
                       type="submit"
@@ -155,7 +175,11 @@ export default function Page() {
                 </div>
               ) : (
                 <div className="flex flex-col justify-center items-center gap-5">
-                  <img className="w-20" src="/icons/story.png" alt="story icon" />
+                  <img
+                    className="w-20"
+                    src="/icons/story.png"
+                    alt="story icon"
+                  />
                   <div
                     className="text-xl font-semibold text-white cursor-pointer"
                     onClick={() => mediaRef.current?.click()}

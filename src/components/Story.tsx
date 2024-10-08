@@ -1,17 +1,19 @@
 'use client';
 
-import React, {  useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import StoryCrousel from './StoryCrousel';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/redux/store';
+import axios from 'axios';
+import { StoryData } from '@/app/interface/interface.declare';
 
 export default function Story() {
-  // const [allstory, setAllstory] = useState<StoryData[]>([]);
   const [startIndex, setStartIndex] = useState<number>(0);
-  const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null); // Changed to string | null
+  const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const visibleItems = 7;
-  const allstory = useSelector((state: RootState) => state.stories.stories);
+  // const allstory = useSelector((state: RootState) => state.stories.stories);
+  const [allstory, setAllstory] = useState<StoryData[]>([]);
   const totalItems = allstory.length;
   const canGoNext = startIndex + visibleItems < totalItems;
   const canGoPrevious = startIndex > 0;
@@ -20,29 +22,48 @@ export default function Story() {
     if (canGoNext) {
       setStartIndex((prevIndex) => prevIndex + visibleItems);
     } else {
-      const remainingItems = totalItems - startIndex;
-      if (remainingItems < visibleItems) {
-        setStartIndex(totalItems - visibleItems);
-      }
+      setStartIndex(0); // Reset to the start if there are no more items
     }
   };
 
   const handlePrevious = () => {
     if (canGoPrevious) {
       setStartIndex((prevIndex) => Math.max(prevIndex - visibleItems, 0));
+    } else {
+      setStartIndex(totalItems - visibleItems); // Go to the last items
     }
   };
 
+  // Get displayed items based on current startIndex
   let displayedItems = allstory.slice(startIndex, startIndex + visibleItems);
-  const remainingItems = visibleItems - displayedItems.length;
 
-  if (remainingItems > 0 && startIndex + visibleItems >= totalItems) {
-    displayedItems = [...displayedItems, ...allstory.slice(0, remainingItems)];
+  // Check if we need to add more items to fill visibleItems slots
+  if (displayedItems.length < visibleItems) {
+    const remainingItems = visibleItems - displayedItems.length;
+    const additionalItems = allstory
+      .slice(0, remainingItems)
+      .filter((item) => !displayedItems.includes(item)); // Avoid duplicates
+    displayedItems = [...displayedItems, ...additionalItems];
   }
 
+  const fetchStories = async () => {
+    try {
+      const res = await axios.get('/api/story');
+      if (res.status === 200) {
+        // dispatch(setStories(res.data.allstory));
+        setAllstory(res.data.allstory);
+      }
+    } catch (error: any) {
+      console.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchStories();
+  }, []);
   return (
     <div className="w-full h-full">
-      <div className="w-full h-full py-4 sm:py-6">
+      <div className="w-full h-full pt-4 sm:pt-6 border-b-[1px] border-gray-300">
         {isLoading ? (
           <div className="w-full h-24 flex justify-between items-center">
             {[...Array(7)].map((_, index) => (
@@ -69,12 +90,12 @@ export default function Story() {
                   <div
                     className="w-16 h-full"
                     key={item._id}
-                    onClick={() => setSelectedStoryId(item._id)} // Use item.id which is a string
+                    onClick={() => setSelectedStoryId(item._id)}
                   >
                     <div className="w-16 aspect-square overflow-hidden rounded-full object-center flex-shrink-0 border-[3px] border-gray-600 cursor-pointer">
                       <img
                         className="w-full h-full object-cover object-center"
-                        src={item.user?.avatar || '/path-to-fallback-image.png'}
+                        src={item.user?.avatar || '/avatar.png'}
                         alt="Story image"
                       />
                     </div>
@@ -99,10 +120,10 @@ export default function Story() {
       </div>
 
       {selectedStoryId !== null && (
-        <div className="w-screen h-screen-[70vh] sm:h-screen  top-12 sm:top-0 left-0 bg-black backdrop-blur-sm bg-opacity-75 flex items-center justify-center overflow-hidden fixed">
+        <div className="w-screen h-screen-[70vh] sm:h-screen top-12 sm:top-0 left-0 bg-black backdrop-blur-sm bg-opacity-75 flex items-center justify-center overflow-hidden fixed z-50">
           <StoryCrousel
-            selectedStoryId={selectedStoryId} // Pass selectedStoryId instead of selectedStoryIndex
-            setSelectedStoryId={setSelectedStoryId} // pass the state setter to close the carousel
+            selectedStoryId={selectedStoryId}
+            setSelectedStoryId={setSelectedStoryId}
           />
         </div>
       )}

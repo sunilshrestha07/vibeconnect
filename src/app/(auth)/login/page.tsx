@@ -1,14 +1,14 @@
 
 'use client'; 
 
-import { setAuthenticated, setUnauthenticated } from '@/app/redux/authSlice';
+import { setPosts } from '@/app/redux/postSlice';
+import { setStories } from '@/app/redux/storySlice';
 import { loginSuccess } from '@/app/redux/UserSlice';
 import Oauth from '@/components/Oauth';
 import axios from 'axios';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 export default function Page() {
@@ -17,6 +17,9 @@ export default function Page() {
   const dispatch = useDispatch();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+
+
 
   // Handle login
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -35,6 +38,35 @@ export default function Page() {
       console.error(`Error logging in: ${error.message}`);
     }
   };
+
+
+  //pre fetching story and posts
+  const fetchStories = async () => {
+    try {
+      const res = await axios.get('/api/story');
+      if (res.status === 200) {
+        dispatch(setStories(res.data.allstory));
+      }
+    } catch (error: any) {
+      console.error(error.message);
+    }
+  };
+  const fetchPosts = async () => {
+    try {
+      const res = await axios.get('/api/post');
+      if (res.status === 200) {
+        dispatch(setPosts(res.data.allstory));
+      }
+    } catch (error: any) {
+      console.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchStories();
+    fetchPosts()
+  }, []);
+
 
   return (
     <div className="flex w-full h-full bg-gray-50">

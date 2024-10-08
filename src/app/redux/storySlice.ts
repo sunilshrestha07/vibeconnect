@@ -2,7 +2,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Define the StoryData interface
-export interface StoryData {
+interface StoryData {
   _id: string;
   user: {
     _id: string;

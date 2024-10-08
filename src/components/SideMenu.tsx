@@ -1,5 +1,10 @@
+'use cli'
+
+
+import { RootState } from '@/app/redux/store';
 import Link from 'next/link';
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 export default function SideMenu() {
   const menu = [
@@ -15,6 +20,8 @@ export default function SideMenu() {
     { name: 'Message', link: '/message', icon: '/icons/chat.png' },
     { name: 'Profile', link: '/profile', icon: '/profile.jpg' },
   ];
+
+  const currentuser = useSelector((state: RootState) => state.user.currentUser);
   return (
     <>
       <div className=" w-full h-screen m-4 xl:m-6 ">
@@ -52,7 +59,7 @@ export default function SideMenu() {
                             : 'p-1 w-9 aspect-square'
                         } `}
                       >
-                        <img className="w-full h-full" src={item.icon} alt="" />
+                        <img className={`${item.name === 'Profile' ? 'w-full h-full object-cover' : 'w-full h-full'}`} src={`${item.name === 'Profile' ? currentuser?.avatar : item.icon}`} alt="" />
                       </div>
                       <div className=" hidden xl:flex">
                         <p className="ml-2 font-medium">{item.name}</p>
