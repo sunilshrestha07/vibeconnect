@@ -1,10 +1,8 @@
 'use client'
 
-import { Post } from '@/app/interface/interface.declare'
 import { RootState } from '@/app/redux/store'
-import axios from 'axios'
 import moment from 'moment'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useSelector } from 'react-redux'
 
 export default function Posts() {

@@ -95,10 +95,11 @@ export default function Page() {
 
       if (res.status === 200) {
         alert('Post created successfully');
+        console.log(res.data);
         if(selectedPostType === 'post') {
           dispatch(setPosts(res.data.post))
         }
-        dispatch(addStory(res.data.story))
+        dispatch(setStories(res.data.story))
         console.log(updatedFormData)
       }
     } catch (error: any) {

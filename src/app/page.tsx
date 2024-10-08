@@ -11,16 +11,16 @@ import { useDispatch } from 'react-redux';
 export default function page() {
   //pre fetching story and posts
   const dispatch = useDispatch();
-  // const fetchStories = async () => {
-  //   try {
-  //     const res = await axios.get('/api/story');
-  //     if (res.status === 200) {
-  //       dispatch(setStories(res.data.allstory));
-  //     }
-  //   } catch (error: any) {
-  //     console.error(error.message);
-  //   }
-  // };
+  const fetchStories = async () => {
+    try {
+      const res = await axios.get('/api/story');
+      if (res.status === 200) {
+        dispatch(setStories(res.data.allstory));
+      }
+    } catch (error: any) {
+      console.error(error.message);
+    }
+  };
   const fetchPosts = async () => {
     try {
       const res = await axios.get('/api/post');
@@ -33,7 +33,7 @@ export default function page() {
   };
 
   useEffect(() => {
-    // fetchStories();
+    fetchStories();
     fetchPosts();
   })
   return (

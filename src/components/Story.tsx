@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/app/redux/store';
 import axios from 'axios';
 import { StoryData } from '@/app/interface/interface.declare';
+import { setStories } from '@/app/redux/storySlice';
 
 export default function Story() {
   const [startIndex, setStartIndex] = useState<number>(0);
@@ -48,19 +49,27 @@ export default function Story() {
 
   const fetchStories = async () => {
     try {
-      const res = await axios.get('/api/story');
-      if (res.status === 200) {
-        // dispatch(setStories(res.data.allstory));
-        setAllstory(res.data.allstory);
+      const res = await fetch('/api/story', {
+        method: 'GET',
+        cache: 'force-cache' // Cache option: 'force-cache', 'no-store', 'reload', etc.
+      });
+      if (res.ok) {
+        const data = await res.json();
+        // dispatch(setStories(data.allstory)); // Store fetched stories in Redux
+        setAllstory(data.allstory);
+      } else {
+        console.error('Failed to fetch stories');
       }
-    } catch (error: any) {
-      console.error(error.message);
+    } catch (error) {
+      console.error('Error fetching stories:', error);
     }
   };
-
+  
   useEffect(() => {
     fetchStories();
   }, []);
+
+  console.log(allstory)
   return (
     <div className="w-full h-full">
       <div className="w-full h-full pt-4 sm:pt-6 border-b-[1px] border-gray-300">
@@ -95,7 +104,7 @@ export default function Story() {
                     <div className="w-16 aspect-square overflow-hidden rounded-full object-center flex-shrink-0 border-[3px] border-gray-600 cursor-pointer">
                       <img
                         className="w-full h-full object-cover object-center"
-                        src={item.user?.avatar || '/avatar.png'}
+                        src={item.user.avatar || '/avatar.png'}
                         alt="Story image"
                       />
                     </div>
