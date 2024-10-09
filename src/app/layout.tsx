@@ -39,7 +39,7 @@ export default function RootLayout({
 
                 {/* Main content */}
                 <div className="w-full h-screen bg-gray-200 col-span-11 sm:col-span-10 xl:col-span-9  grid grid-cols-8 overflow-auto">
-                  <div className={`${pathname === "/create" ? "w-full h-full col-span-8 ":"w-full h-full col-span-8 xl:col-span-5 sm:pr-5 overflow-y-auto px-2 sm:px-4"}`}>
+                  <div className={`${pathname === "/" ? "w-full h-full col-span-8 xl:col-span-5 sm:pr-5 overflow-y-auto px-2 sm:px-4":"w-full h-full col-span-8 "}`}>
                     {children} {/* Page content will be rendered here */}
                   </div>
 

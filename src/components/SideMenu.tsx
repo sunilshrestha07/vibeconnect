@@ -59,7 +59,7 @@ export default function SideMenu() {
                             : 'p-1 w-9 aspect-square'
                         } `}
                       >
-                        <img className={`${item.name === 'Profile' ? 'w-full h-full object-cover' : 'w-full h-full'}`} src={`${item.name === 'Profile' ? currentuser?.avatar : item.icon}`} alt="" />
+                        <img className={`${item.name === 'Profile' ? 'w-full h-full object-cover' : 'w-full h-full'}`} src={`${item.name === 'Profile' ? currentuser?.avatar ||  '/avatar.png' : item.icon}`} alt="" />
                       </div>
                       <div className=" hidden xl:flex">
                         <p className="ml-2 font-medium">{item.name}</p>

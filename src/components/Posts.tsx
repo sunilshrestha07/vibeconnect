@@ -49,7 +49,7 @@ export default function Posts() {
                     <div className=" w-10 aspect-square  overflow-hidden rounded-full">
                       <img
                         className=" w-full h-full object-cover"
-                        src={item.user.avatar}
+                        src={item.user.avatar || '/avatar.png'}
                         alt="user avatar"
                       />
                     </div>
