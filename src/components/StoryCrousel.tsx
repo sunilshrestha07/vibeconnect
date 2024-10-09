@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/app/redux/store';
+import axios from 'axios';
 
 interface StoryCrouselProps {
   selectedStoryId: string;
@@ -13,6 +14,8 @@ export default function StoryCrousel({
 }: StoryCrouselProps) {
   const allstory = useSelector((state: RootState) => state.stories.stories);
   const totalItems = allstory.length;
+  const currentUser = useSelector((state: RootState) => state.user.currentUser);
+  const [deleteModelActive, setDeleteModelActive] = useState<boolean>(false);
 
   const selectedIndex = allstory.findIndex(
     (story) => story._id === selectedStoryId
@@ -22,6 +25,25 @@ export default function StoryCrousel({
   const [comment, setComment] = useState<string>('');
   const [progress, setProgress] = useState<number>(0);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const dispatch = useDispatch();
+
+  //handel model show hide
+  const handelDeleteModel = () => {
+    setDeleteModelActive(!deleteModelActive);
+  };
+
+  //handel story deelte
+  const handleStoryDelete = async (id: string) => {
+    try {
+      const res = await axios.delete(`/api/story/${id}`);
+      if (res.status === 200) {
+        console.log("Story delete successfully")
+        // dispatch(removeStory(id));
+      }
+    } catch (error: any) {
+      console.log(`Error delting story: ${error.message}`);
+    }
+  };
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -57,6 +79,9 @@ export default function StoryCrousel({
 
   // Handle progress for images and videos
   useEffect(() => {
+    if (selectedStoryId) {
+      console.log('story seen');
+    }
     if (currentStory.media.type === 'image') {
       const intervalTime = 50; // Update progress every 50ms
       const progressStep = (intervalTime / 5000) * 100; // 5-second step size
@@ -91,8 +116,8 @@ export default function StoryCrousel({
       {/* Current Story */}
       <div className="w-full sm:1/2 md:w-2/5 xl:w-1/3 h-full col-span-3 border-[1px] border-gray-600 relative">
         {/* Owner info */}
-        <div className="">
-          <div className="absolute top-2 left-2 flex gap-2 items-center">
+        <div className=" ">
+          <div className="absolute top-2 left-2 flex gap-2 items-center ">
             <div className="w-12 aspect-square rounded-full overflow-hidden">
               <img
                 className="w-full h-full object-cover"
@@ -142,7 +167,7 @@ export default function StoryCrousel({
                 src={currentStory.media.url}
                 autoPlay
                 playsInline
-                preload='true'
+                preload="true"
               />
             )}
           </div>
@@ -188,9 +213,39 @@ export default function StoryCrousel({
           </div>
           <div className="w-[20%] flex justify-center mt-3">
             <div className="">
-              <img className="w-9 cursor-pointer" src="/icons/like.png" alt="Like" />
+              <img
+                className="w-9 cursor-pointer"
+                src="/icons/like.png"
+                alt="Like"
+              />
             </div>
           </div>
+        </div>
+
+        {/* //delte option */}
+        <div className=" absolute rounded-full top-4 right-16">
+          {currentStory.user._id === currentUser?._id && (
+            <div className=" flex items-center justify-center w-full h-full ">
+              <img
+                className="w-7 cursor-pointer"
+                src="/icons/dots.png"
+                alt=""
+                onClick={handelDeleteModel}
+              />
+
+              {/* //delete option */}
+              {deleteModelActive && (
+                <div className="absolute top-0 right-10 bg-white py-1 px-2 rounded-lg">
+                  <p
+                    className="font-semibold text-red-500 cursor-pointer"
+                    onClick={() => handleStoryDelete(currentStory._id)}
+                  >
+                    Delete
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
