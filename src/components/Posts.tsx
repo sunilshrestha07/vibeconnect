@@ -13,9 +13,11 @@ export default function Posts() {
   const dispatch = useDispatch();
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const [deleteModelActive, setDeleteModelActive] = useState(false);
+  const [idToDelete, setIdToDelete] = useState<string>('');
 
   //handel post delete
   const handlePostDelete = async (id: string) => {
+    
     try {
       const res = await axios.delete(`/api/post/${id}`);
       if (res.status === 200) {
@@ -26,9 +28,11 @@ export default function Posts() {
     }
   };
 
+
   //handel model show
-  const handelDeleteModel = () => {
-    setDeleteModelActive(!deleteModelActive);
+  const handelDeleteModel = (id:string) => {
+    setIdToDelete(id);
+    setDeleteModelActive(!deleteModelActive || setIdToDelete === null);
   };
 
   return (
@@ -69,11 +73,11 @@ export default function Posts() {
                           className="w-5 cursor-pointer"
                           src="/icons/dots.png"
                           alt=""
-                          onClick={handelDeleteModel}
+                          onClick={()=>handelDeleteModel(item._id)}
                         />
 
                         {/* //delete option */}
-                        {deleteModelActive && (
+                        {deleteModelActive && idToDelete === item._id && (
                           <div className="absolute top-0 right-10 ">
                             <p
                               className="font-semibold text-red-500 cursor-pointer"
