@@ -2,21 +2,23 @@
 
 import React, { useEffect, useState } from 'react';
 import StoryCrousel from './StoryCrousel';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/app/redux/store';
 import axios from 'axios';
 import { StoryData } from '@/app/interface/interface.declare';
+import { setStories } from '@/app/redux/storySlice';
 
 export default function Story() {
   const [startIndex, setStartIndex] = useState<number>(0);
   const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const visibleItems = 7;
-  // const allstory = useSelector((state: RootState) => state.stories.stories);
-  const [allstory, setAllstory] = useState<StoryData[]>([]);
+  const allstory = useSelector((state: RootState) => state.stories.stories);
+  // const [allstory, setAllstory] = useState<StoryData[]>([]);
   const totalItems = allstory.length;
   const canGoNext = startIndex + visibleItems < totalItems;
   const canGoPrevious = startIndex > 0;
+  const dispatch = useDispatch();
 
   const handleNext = () => {
     if (canGoNext) {
@@ -50,8 +52,8 @@ export default function Story() {
     try {
       const res = await axios.get('/api/story');
       if (res.status === 200) {
-        // dispatch(setStories(res.data.allstory));
-        setAllstory(res.data.allstory);
+        dispatch(setStories(res.data.allstory));
+        // setAllstory(res.data.allstory);
       }
     } catch (error: any) {
       console.error(error.message);

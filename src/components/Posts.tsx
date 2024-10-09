@@ -12,7 +12,7 @@ export default function Posts() {
   return (
     <>
     <div className="w-full h-full ">
-        <div className="w-full h-full flex flex-col gap-12  ">
+        <div className="w-full h-full flex flex-col gap-12  mb-10">
             {allpost && allpost.length > 0 && allpost.map((item)=>(
                 <div className=" w-full sm:aspect-[9/10]  relative" key={ item._id}>
                     {/* user info */}

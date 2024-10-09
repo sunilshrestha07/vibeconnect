@@ -16,7 +16,7 @@ interface StoryData {
   isActive: boolean;
   viewers: {
     _id: string;
-  }[];
+  };
 }
 
 // Define the initial state, which is an array of StoryData

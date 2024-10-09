@@ -8,6 +8,7 @@ import Topbar from '@/components/Topbar';
 import './globals.css';
 import ReduxProvider from './redux/reduxProvider';
 import { usePathname } from 'next/navigation';
+import Recommendation from '@/components/Recommendation';
 
 export default function RootLayout({
   children,
@@ -42,8 +43,8 @@ export default function RootLayout({
                     {children} {/* Page content will be rendered here */}
                   </div>
 
-                  <div className={`${pathname === "/create" ? "hidden":"w-full h-full col-span-3"}`}>
-                    {/* Additional content */}
+                  <div className={`${pathname === "/" ? "w-full h-full col-span-3":"hidden"}`}>
+                    <Recommendation/>
                   </div>
                 </div>
               </div>
