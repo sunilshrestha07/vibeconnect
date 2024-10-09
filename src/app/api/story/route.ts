@@ -39,18 +39,22 @@ export async function POST(request: Request) {
 
 //getting all the story
 export async function GET(request: Request) {
-    await dbConnect()
+    await dbConnect();
     try {
         const allstory = await Story.find()
-        .sort({createdAt:-1})
-        .populate("user",'userName avatar')
+            .sort({ createdAt: -1 })
+            .populate("user", "userName avatar");
 
-        if(allstory.length === 0){
-            return NextResponse.json({message:"No story found"},{status: 404})
+        // Manually filter out stories where the user is null
+        const filteredStories = allstory.filter((story: any) => story.user !== null);
+
+        if (filteredStories.length === 0) {
+            return NextResponse.json({ message: "No story found" }, { status: 404 });
         }
-        return NextResponse.json({message:"All the story are:",allstory:allstory},{status: 200})
-    } catch (error :any) {
-        return NextResponse.json({message:`Error ting all story ${error.message}`},{status: 500})
+
+        return NextResponse.json({ message: "All the stories are:", allstory: filteredStories }, { status: 200 });
+    } catch (error: any) {
+        return NextResponse.json({ message: `Error fetching all stories: ${error.message}` }, { status: 500 });
     }
-    
 }
+

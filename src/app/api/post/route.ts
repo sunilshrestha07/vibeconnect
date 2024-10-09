@@ -37,17 +37,21 @@ export async function POST(request: Request) {
 
 //getting all the post
 export async function GET(request: Request) {
-    await dbConnect()
+    await dbConnect();
     try {
         const allpost = await Post.find()
-        .populate("user",'userName avatar')
-        .sort({createdAt:-1})
-        if(allpost.length === 0){
-            return NextResponse.json({message:"No post found"},{status: 404})
+            .sort({ createdAt: -1 })
+            .populate("user", "userName avatar");
+
+        // Manually filter out stories where the user is null
+        const filteredPost = allpost.filter((Post: any) => Post.user !== null);
+
+        if (filteredPost.length === 0) {
+            return NextResponse.json({ message: "No Post found" }, { status: 404 });
         }
-        return NextResponse.json({message:"All the post are:",allpost:allpost},{status: 200})
-    } catch (error) {
-       return NextResponse.json({message:`Error ting all post ${error}`},{status: 500}) 
+
+        return NextResponse.json({ message: "All the stories are:", allpost: filteredPost }, { status: 200 });
+    } catch (error: any) {
+        return NextResponse.json({ message: `Error fetching all stories: ${error.message}` }, { status: 500 });
     }
-    
 }

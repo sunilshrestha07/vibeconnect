@@ -37,8 +37,8 @@ export default function StoryCrousel({
     try {
       const res = await axios.delete(`/api/story/${id}`);
       if (res.status === 200) {
-        console.log("Story delete successfully")
-        // dispatch(removeStory(id));
+        console.log('Story delete successfully');
+        window.location.reload();
       }
     } catch (error: any) {
       console.log(`Error delting story: ${error.message}`);
