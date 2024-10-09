@@ -94,13 +94,7 @@ export default function Page() {
       const res = await axios.post(`/api/${selectedPostType}`, updatedFormData);
 
       if (res.status === 200) {
-        alert('Post created successfully');
-        console.log(res.data);
-        if(selectedPostType === 'post') {
-          dispatch(setPosts(res.data.post))
-        }
-        dispatch(setStories(res.data.story))
-        console.log(updatedFormData)
+        router.push('/');
       }
     } catch (error: any) {
       console.error(`Error creating post: ${error.message}`);
