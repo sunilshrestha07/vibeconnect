@@ -2,7 +2,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Define the StoryData interface
-interface StoryData {
+ interface StoryData {
   _id: string;
   user: {
     _id: string;
@@ -18,7 +18,6 @@ interface StoryData {
     _id: string;
   };
 }
-
 // Define the initial state, which is an array of StoryData
 interface StoryState {
   stories: StoryData[];

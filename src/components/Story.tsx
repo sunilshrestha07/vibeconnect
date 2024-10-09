@@ -5,7 +5,6 @@ import StoryCrousel from './StoryCrousel';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/app/redux/store';
 import axios from 'axios';
-import { StoryData } from '@/app/interface/interface.declare';
 import { setStories } from '@/app/redux/storySlice';
 
 export default function Story() {
@@ -14,7 +13,6 @@ export default function Story() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const visibleItems = 7;
   const allstory = useSelector((state: RootState) => state.stories.stories);
-  // const [allstory, setAllstory] = useState<StoryData[]>([]);
   const totalItems = allstory.length;
   const canGoNext = startIndex + visibleItems < totalItems;
   const canGoPrevious = startIndex > 0;
