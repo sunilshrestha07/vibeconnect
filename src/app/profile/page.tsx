@@ -14,6 +14,9 @@ export default function page() {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const dispatch = useDispatch();
   const [selectedLink, setSelectedLink] = useState('Posts');
+  const posts = useSelector((state: RootState) => state.posts.posts);
+
+  const totalpost = posts.filter((post) => post.user._id === currentUser?._id).length
 
   //links for post or saved
   const links=[
@@ -72,15 +75,15 @@ export default function page() {
                   {/* post, followers and following */}
                   <div className="mt-2  w-full flex justify-between font-semibold text-xs sm:text-base">
                     <div className=" flex flex-col justify-center items-center">
-                      <p>2</p>
+                      <p>{totalpost}</p>
                       <p>Posts</p>
                     </div>
                     <div className="flex flex-col justify-center items-center">
-                      <p>2</p>
+                      <p>{currentUser?.followers?.length || 0}</p>
                       <p>Followers</p>
                     </div>
                     <div className="flex flex-col justify-center items-center">
-                      <p>2</p>
+                      <p>{currentUser?.following?.length || 0}</p>
                       <p>Following</p>
                     </div>
                   </div>

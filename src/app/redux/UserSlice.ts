@@ -11,6 +11,9 @@ interface User {
     userName:string,
     _id:string,
     email:string,
+    followers?: [];
+    following?: [];
+    bio:string
 }
 
 
