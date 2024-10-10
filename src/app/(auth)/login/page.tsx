@@ -143,7 +143,7 @@ export default function Login() {
                 </div>
               </form>
               <div className=" flex justify-center">
-                <div className=" w-1/2 mt-4">
+                <div className=" w-8/12 sm:w-1/2 mt-4">
                   <Oauth />
                 </div>
               </div>
