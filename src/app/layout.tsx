@@ -6,9 +6,11 @@ import Footbar from '@/components/Footbar';
 import SideMenu from '@/components/SideMenu';
 import Topbar from '@/components/Topbar';
 import './globals.css';
-import ReduxProvider from './redux/reduxProvider';
+import ReduxProvider from './redux/reduxProvider'; 
 import { usePathname } from 'next/navigation';
 import Recommendation from '@/components/Recommendation';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import toastify CSS
 
 export default function RootLayout({
   children,
@@ -16,14 +18,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+
   return (
     <html lang="en">
       <body>
         <ReduxProvider>
+          {/* ToastContainer should be rendered regardless */}
+          <ToastContainer
+            position="top-right"
+            autoClose={1000}
+            hideProgressBar
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss={false}
+            draggable={false}
+            pauseOnHover={false}
+            theme="colored"
+          />
+
+          {/* Conditionally render layout based on the current page */}
           {pathname === '/login' ||
           pathname === '/signup' ||
           pathname === '/verify' ? (
-            <div className="w-full h-screen">{children}</div>
+            <div className="w-full h-screen overflow-hidden">{children}</div>
           ) : (
             <div className="w-full h-screen relative">
               {/* Topbar for small screens */}
@@ -38,13 +56,23 @@ export default function RootLayout({
                 </div>
 
                 {/* Main content */}
-                <div className="w-full h-screen bg-gray-200 col-span-11 sm:col-span-10 xl:col-span-9  grid grid-cols-8 overflow-auto">
-                  <div className={`${pathname === "/" ? "w-full h-full col-span-8 xl:col-span-5 sm:pr-5 overflow-y-auto px-2 sm:px-4":"w-full h-full col-span-8 "}`}>
+                <div className="w-full h-screen bg-gray-200 col-span-11 sm:col-span-10 xl:col-span-9 grid grid-cols-8 overflow-auto">
+                  <div
+                    className={`${
+                      pathname === '/'
+                        ? 'w-full h-full col-span-8 xl:col-span-5 sm:pr-5 overflow-y-auto px-2 sm:px-4'
+                        : 'w-full h-full col-span-8 '
+                    }`}
+                  >
                     {children} {/* Page content will be rendered here */}
                   </div>
 
-                  <div className={`${pathname === "/" ? "w-full h-full col-span-3":"hidden"}`}>
-                    <Recommendation/>
+                  <div
+                    className={`${
+                      pathname === '/' ? 'w-full h-full col-span-3' : 'hidden'
+                    }`}
+                  >
+                    <Recommendation />
                   </div>
                 </div>
               </div>

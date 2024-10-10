@@ -38,3 +38,20 @@ export interface Post {
     following?: ObjectId[];
     bio:string
   }
+
+
+export interface LoginInterface{
+    email: string;
+    password: string;
+}
+
+export interface SignUpInterface{
+    email: string;
+    userName: string;
+    password: string;
+}
+
+export interface VerifyInterface{
+  email: string;
+  verificationCode: string;
+}

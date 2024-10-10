@@ -45,7 +45,7 @@ export default function Oauth() {
   return (
     <>
       <button
-        className="w-full border border-gray-400 flex items-center justify-center space-x-2 py-2 px-4 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        className="w-full bg-gray-300  flex items-center justify-center space-x-2 py-2 px-4 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         onClick={handleGoogleClick}
       >
         <Image src="/icons/google.png" alt="Google" width={20} height={20} />

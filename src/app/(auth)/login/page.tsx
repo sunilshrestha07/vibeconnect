@@ -1,46 +1,54 @@
+'use client';
 
-'use client'; 
-
-import { setPosts } from '@/app/redux/postSlice';
-import { setStories } from '@/app/redux/storySlice';
-import { loginSuccess } from '@/app/redux/UserSlice';
-import Oauth from '@/components/Oauth';
-import axios from 'axios';
+import Image from 'next/image';
 import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
+import { loginSuccess } from '@/app/redux/UserSlice';
+import { loginFail } from '@/app/redux/UserSlice';
+import { LoginInterface } from '@/app/interface/interface.declare';
+import { setStories } from '@/app/redux/storySlice';
+import { setPosts } from '@/app/redux/postSlice';
+import Oauth from '@/components/Oauth';
 
-export default function Page() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function Login() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState<LoginInterface[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const handelLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
 
-
-
-  // Handle login
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handelLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    const formData = { email, password };
     try {
       const res = await axios.post('/api/user/login', formData);
       if (res.status === 200) {
-        dispatch(loginSuccess(res.data.user));
         router.push('/');
         setIsLoading(false);
+        dispatch(loginSuccess(res.data.user));
       }
     } catch (error: any) {
       setIsLoading(false);
-      console.error(`Error logging in: ${error.message}`);
+      dispatch(loginFail(error));
+      if (axios.isAxiosError(error)) {
+        toast.error(
+          error.response?.data?.message ||
+            'An unknown error occurred during login'
+        );
+      } else {
+        toast.error('An unknown error occurred during login');
+      }
     }
   };
 
-
-  //pre fetching story and posts
+  //prefetching the data
   const fetchStories = async () => {
     try {
       const res = await axios.get('/api/story');
@@ -55,7 +63,7 @@ export default function Page() {
     try {
       const res = await axios.get('/api/post');
       if (res.status === 200) {
-        dispatch(setPosts(res.data.allstory));
+        dispatch(setPosts(res.data.allpost));
       }
     } catch (error: any) {
       console.error(error.message);
@@ -64,70 +72,106 @@ export default function Page() {
 
   useEffect(() => {
     fetchStories();
-    fetchPosts()
-  }, []);
-
-
+    fetchPosts();
+  });
   return (
-    <div className="flex w-full h-full bg-gray-50">
-      <div className="flex flex-1 flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
-        <div className="mx-auto w-full max-w-sm lg:w-96">
-          <div className="text-center">
-            <h1 className="text-4xl font-semibold text-gray-900 mb-8 font-Italianno">Vibeconnect</h1>
+    <>
+      <div className="">
+        <div className=" relative w-full h-screen overflow-hidden">
+          <div className=" w-full h-screen overflow-hidden object-cover ">
+            <Image
+              className="w-full h-full object-cover object-top  brightness-50"
+              src="/bg2.png"
+              alt="logo"
+              width={1000}
+              height={1000}
+              quality={100}
+            />
           </div>
-          <form className="space-y-6" onSubmit={handleLogin}>
-            <input
-              type="text"
-              placeholder="Email"
-              className="w-full px-3 py-2 border border-gray-400 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full px-3 py-2 border border-gray-400 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
-            />
-            <button
-              type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              {isLoading ? (
-                <div className="loader"></div>
-              ):(
-                <p>Log in</p>
-              )}
-            </button>
-          </form>
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-400" />
+          <div className="lg:w-1/2 xl:w-2/6 aspect-square md:aspect-[9/10] xl:aspect-[9/12] absolute top-[50%] right-[50%] translate-x-[50%] translate-y-[-50%] bg-white rounded-3xl ">
+            <div className=" flex flex-col font-medium text-xl sm:text-2xl md:text-3xl text-center py-5 sm:py-7 lg:py-10">
+              Welcome back.
+              <span className=" text-sm md:text-base">
+                Log in and start connecting with people who matches your vibe.
+              </span>
+            </div>
+            <div className=" px-10 ">
+              <form
+                className="flex flex-col gap-6"
+                onSubmit={handelLoginSubmit}
+              >
+                <div className=" flex flex-col">
+                  <label className="font-medium" htmlFor="">
+                    Email
+                  </label>
+                  <input
+                    className=" outline-1 outline outline-gray-500 px-5 py-2 font-medium text-xl rounded-lg"
+                    type="email"
+                    name=""
+                    id="email"
+                    onChange={handelLoginChange}
+                  />
+                </div>
+                <div className=" flex flex-col">
+                  <label className="font-medium" htmlFor="">
+                    Password
+                  </label>
+                  <input
+                    className=" outline-1 outline outline-gray-500 px-5 py-2 font-medium text-xl rounded-lg"
+                    type="password"
+                    name=""
+                    id="password"
+                    onChange={handelLoginChange}
+                  />
+                </div>
+                <div className=" flex justify-center mt-5">
+                  <button
+                    type="submit"
+                    className={`font-semibold text-xl  px-10 py-2 rounded-lg bg-black  text-white ${
+                      isLoading ? 'cursor-not-allowed' : ''
+                    }`}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <div className=" flex justify-center items-center px-3 py-">
+                        <span className="loader"></span>
+                      </div>
+                    ) : (
+                      'Login'
+                    )}
+                  </button>
+                </div>
+              </form>
+              <div className=" flex justify-center">
+                <div className=" w-1/2 mt-4">
+                  <Oauth />
+                </div>
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-50 text-gray-500">OR</span>
+              <div className="">
+                <p className="text-center mt-2">
+                  <span className=" text-sm opacity-60">
+                    <Link href="/login">Forgot your password?</Link>
+                  </span>
+                </p>
+              </div>
+              <div className="">
+                <p className="text-center mt-5">
+                  Don&apos;t have an account?{' '}
+                  <span className=" font-semibold">
+                    <Link href="/signup">Sign up</Link>
+                  </span>
+                </p>
+              </div>
+              <div className="  sm:pb-0">
+                <p className="text-center mt-5">
+                  By continuing to use Vibeconnect, you agree to our all{' '}
+                  <span className=" font-semibold">Terms and Conditions</span>
+                </p>
               </div>
             </div>
-            <div className="mt-6">
-              <Oauth/>
-            </div>
-          </div>
-          <div className="mt-6 text-center">
-            <Link href="#" className="text-sm text-blue-600 hover:underline">Forgot password?</Link>
-          </div>
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <Link href="#" className="font-semibold text-blue-600 hover:underline">Sign up</Link>
-            </p>
           </div>
         </div>
       </div>
-      <div className="lg:block hidden ml-8">
-        <img className="w-full h-full object-cover" src="/iphone.png" alt="" />
-      </div>
-    </div>
+    </>
   );
 }
