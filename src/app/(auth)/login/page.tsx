@@ -48,32 +48,7 @@ export default function Login() {
     }
   };
 
-  //prefetching the data
-  const fetchStories = async () => {
-    try {
-      const res = await axios.get('/api/story');
-      if (res.status === 200) {
-        dispatch(setStories(res.data.allstory));
-      }
-    } catch (error: any) {
-      console.error(error.message);
-    }
-  };
-  const fetchPosts = async () => {
-    try {
-      const res = await axios.get('/api/post');
-      if (res.status === 200) {
-        dispatch(setPosts(res.data.allpost));
-      }
-    } catch (error: any) {
-      console.error(error.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchStories();
-    fetchPosts();
-  });
+  
   return (
     <>
       <div className="">

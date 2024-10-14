@@ -5,6 +5,7 @@ import userReducer from './UserSlice'
 import authReducer from './authSlice'
 import storyReducer from './storySlice'
 import postReducer from './postSlice'
+import commentReducer from './commentSlice'
 
 // Combine your reducers into a root reducer
 const rootReducer = combineReducers({
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
     auth:authReducer,
     stories:storyReducer,
     posts: postReducer,
+    comments: commentReducer
 });
 
 // Configuration for Redux Persist

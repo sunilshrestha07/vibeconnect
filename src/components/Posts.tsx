@@ -6,6 +6,9 @@ import axios from 'axios';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Comments from './Comments';
+import { set } from 'mongoose';
+import AddComment from './AddComment';
 
 export default function Posts() {
   const allpost = useSelector((state: RootState) => state.posts.posts);
@@ -13,6 +16,11 @@ export default function Posts() {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const [deleteModelActive, setDeleteModelActive] = useState(false);
   const [idToDelete, setIdToDelete] = useState<string>('');
+  const allcomments = useSelector(
+    (state: RootState) => state.comments.comments
+  );
+  const [commentIsActive, setCommentIsActive] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string>('');
 
   const handlePostDelete = async (id: string) => {
     try {
@@ -34,11 +42,11 @@ export default function Posts() {
     if (!currentUser) return;
 
     // Optimistically update the UI
-    const updatedPost = allpost.find(post => post._id === postId);
+    const updatedPost = allpost.find((post) => post._id === postId);
     if (updatedPost) {
       const isLiked = updatedPost.likes.includes(currentUser._id);
       const newLikes = isLiked
-        ? updatedPost.likes.filter(id => id !== currentUser._id)
+        ? updatedPost.likes.filter((id) => id !== currentUser._id)
         : [...updatedPost.likes, currentUser._id];
 
       dispatch(updatePost({ ...updatedPost, likes: newLikes }));
@@ -47,7 +55,7 @@ export default function Posts() {
     // Sync with the server
     try {
       await axios.put(`/api/post/${postId}`, {
-        userId: currentUser._id
+        userId: currentUser._id,
       });
     } catch (error) {
       console.log('Error liking/unliking post');
@@ -56,6 +64,12 @@ export default function Posts() {
         dispatch(updatePost(updatedPost));
       }
     }
+  };
+
+  //handel comment shwo and hide
+  const handelCommentShowAndHide = (id: string) => {
+    setCommentIsActive(!commentIsActive || selectedPostId !== id);
+    setSelectedPostId(id);
   }
 
   return (
@@ -69,7 +83,59 @@ export default function Posts() {
                 className=" w-full sm:aspect-[9/10]  relative border-[1px] border-gray-300 rounded-md py-2"
                 key={item._id}
               >
-                {/* ... (previous code for user info and delete option remains the same) ... */}
+                {/* top bar with user and delete option */}
+                <div className=" flex items-center justify-between gap-3 px-2 py-1 ">
+                  {/* user info */}
+                  <div className=" flex  gap-3 items-center">
+                    <div className=" w-10 aspect-square  overflow-hidden rounded-full">
+                      <img
+                        className=" w-full h-full object-cover"
+                        src={item.user.avatar || '/avatar.png'}
+                        alt="user avatar"
+                      />
+                    </div>
+                    <p className=" text-sm font-semibold text-black">
+                      {item.user.userName}
+                    </p>
+                    <p className=" text-xs font-semibold text-black">
+                      {moment(item.createdAt).fromNow()}
+                    </p>
+                  </div>
+
+                  <div className="  w-10 h-10 ">
+                    {/* //if user show the delete option */}
+                    {item.user._id === currentUser?._id ? (
+                      <div className=" flex items-center justify-center w-full h-full ">
+                        <img
+                          className="w-5 cursor-pointer"
+                          src="/icons/dots.png"
+                          alt=""
+                          onClick={() => handelDeleteModel(item._id)}
+                        />
+
+                        {/* //delete option */}
+                        {deleteModelActive && idToDelete === item._id && (
+                          <div className="absolute top-5 right-16 ">
+                            <p
+                              className="font-semibold text-red-500 cursor-pointer"
+                              onClick={() => handlePostDelete(item._id)}
+                            >
+                              Delete
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className=" flex items-center justify-center w-full h-full ">
+                        <img
+                          className="w-5 cursor-pointer"
+                          src="/icons/dots.png"
+                          alt=""
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
 
                 {/* post image */}
                 <div className="w-full aspect-[9/8]  overflow-hidden">
@@ -85,9 +151,19 @@ export default function Posts() {
                 <div className="w-full  flex gap-4 p-2">
                   <div className="">
                     {currentUser && item.likes.includes(currentUser._id) ? (
-                      <img className="w-6 cursor-pointer" src="/icons/love.png" alt="" onClick={() => handelPostLikeAndUnlike(item._id)} />
+                      <img
+                        className="w-6 cursor-pointer"
+                        src="/icons/love.png"
+                        alt=""
+                        onClick={() => handelPostLikeAndUnlike(item._id)}
+                      />
                     ) : (
-                      <img className="w-6 cursor-pointer " src="/icons/like.png" alt="" onClick={() => handelPostLikeAndUnlike(item._id)} />
+                      <img
+                        className="w-6 cursor-pointer "
+                        src="/icons/like.png"
+                        alt=""
+                        onClick={() => handelPostLikeAndUnlike(item._id)}
+                      />
                     )}
                   </div>
                   <div className="">
@@ -105,19 +181,52 @@ export default function Posts() {
                 {/* description of the post */}
                 {item.discription && (
                   <div className="p-2">
-                    <p className=" font-medium text-sm sm:text-base">
-                      {item.user.userName} {item.discription}
+                    <p className=" ">
+                      <div className=" flex gap-3">
+                        <span className="font-medium text-sm sm:text-base">
+                          {item.user.userName}
+                        </span>
+                        <span className=" text-sm sm:text-base">
+                          {' '}
+                          {item.discription}
+                        </span>
+                      </div>
                     </p>
                   </div>
                 )}
 
-                {/* //show the count of the comments */}
-                <div className="px-2">
-                  <p className=" font-medium text-sm sm:text-base">
-                    {item.comments.length} comments
+                {/* comments section */}
+                <div className="w-full px-2">
+                  <p className=" font-normal text-sm sm:text-base">
+                    {allcomments.length > 0 && (
+                      <div className="">
+                        {
+                          allcomments.filter(
+                            (comment) => comment.post === item._id
+                          ).length
+                        }{' '}
+                        comments
+                      </div>
+                    )}
                   </p>
-                </div>
 
+                  {/* //all comments */}
+                  <div className="">
+                    <p className="text-sm sm:text-base opacity-70 cursor-pointer" onClick={()=>handelCommentShowAndHide(item._id)}>
+                      View all comments
+                    </p>
+                    {commentIsActive && selectedPostId === item._id && (
+                      <div className="">
+                        <Comments selectedPostId={selectedPostId} />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* add comment */}
+                  <div className="w-full">
+                    <AddComment selectedPostId={item._id}/>
+                  </div>
+                </div>
               </div>
             ))}
         </div>

@@ -7,6 +7,7 @@ import axios from 'axios';
 import { setStories } from './redux/storySlice';
 import { setPosts } from './redux/postSlice';
 import { useDispatch } from 'react-redux';
+import { setComments } from './redux/commentSlice';
 
 export default function page() {
   //pre fetching story and posts
@@ -31,10 +32,22 @@ export default function page() {
       console.error(error.message);
     }
   };
+  const fetchComments = async () => {
+    try {
+      const res = await axios.get('/api/comment');
+      if (res.status === 200) {
+        dispatch(setComments(res.data.allcomments));
+        // console.log(res.data.allcomments);
+      }
+    } catch (error: any) {
+      console.error(error.message);
+    }
+  };
 
   useEffect(() => {
     fetchStories();
     fetchPosts();
+    fetchComments()
   })
   return (
     <>
