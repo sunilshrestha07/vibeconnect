@@ -9,8 +9,8 @@ export interface PostData {
       url: string;
       type: string;
     }; // Array of image URLs
-    likes: []; // Array of ObjectId references to User (for likes)
-    comments: []; // Array of ObjectId references to User (for comments)
+    likes: string[]; // Array of ObjectId references to User (for likes)
+    comments: string[]; // Array of ObjectId references to User (for comments)
     user: {
       _id: string;
       userName: string;
