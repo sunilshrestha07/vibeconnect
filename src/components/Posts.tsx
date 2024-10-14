@@ -110,6 +110,14 @@ export default function Posts() {
                     </p>
                   </div>
                 )}
+
+                {/* //show the count of the comments */}
+                <div className="px-2">
+                  <p className=" font-medium text-sm sm:text-base">
+                    {item.comments.length} comments
+                  </p>
+                </div>
+
               </div>
             ))}
         </div>
