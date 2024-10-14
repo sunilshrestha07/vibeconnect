@@ -43,7 +43,7 @@ export async function GET(request: Request) {
             .sort({ createdAt: -1 })
             .populate("user", "userName avatar");
 
-        // Manually filter out stories where the user is null
+        // Manually filter out post where the user is null
         const filteredPost = allpost.filter((Post: any) => Post.user !== null);
 
         if (filteredPost.length === 0) {
