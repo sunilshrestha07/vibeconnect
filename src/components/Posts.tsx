@@ -198,7 +198,7 @@ export default function Posts() {
                 {/* comments section */}
                 <div className="w-full px-2">
                   <p className=" font-normal text-sm sm:text-base">
-                    {allcomments.length > 0 && (
+                    {allcomments && allcomments.length > 0 && (
                       <div className="">
                         {
                           allcomments.filter(
