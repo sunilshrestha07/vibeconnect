@@ -150,7 +150,7 @@ export default function StoryCrousel({
         )}
 
         {/* Story content */}
-        <div className="w-full h-screen">
+        <div className="w-full h-screen ">
           <div className="w-full h-full overflow-hidden bg-gray-200">
             {currentStory.media.type === 'image' ? (
               <img

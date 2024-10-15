@@ -1,7 +1,13 @@
-import React from 'react'
+import React from 'react';
 
 export default function page() {
   return (
-    <div>This is message page</div>
-  )
+    <>
+      <div className=" w-full h-full">
+        <div className=" w-full h-full sm:text-2xl font-semibold flex items-center justify-center">
+          Sorry! chat option is not available at the moment.
+        </div>
+      </div>
+    </>
+  );
 }

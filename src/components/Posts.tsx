@@ -107,7 +107,7 @@ export default function Posts() {
   return (
     <>
       <div className="w-full h-full ">
-        <div className="w-full h-full flex flex-col gap-12 my-4  mb-10">
+        <div className="w-full h-full flex flex-col gap-5 my-3  mb-10">
           {allpost &&
             allpost.length > 0 &&
             allpost.map((item) => (
@@ -220,14 +220,8 @@ export default function Posts() {
                 {item.discription && (
                   <div className="p-2">
                     <p className=" ">
-                      <div className=" flex gap-3">
-                        <span className="font-medium text-sm sm:text-base">
-                          {item.user.userName}
-                        </span>
-                        <span className=" text-sm sm:text-base">
-                          {' '}
-                          {item.discription}
-                        </span>
+                      <div className=" flex gap-3 text-start ">
+                        <p className=' text-sm sm:text-base'><span className='font-medium '>{item.user.userName}</span> { ' '} {item.discription}</p>
                       </div>
                     </p>
                   </div>

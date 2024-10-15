@@ -10,6 +10,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setComments } from './redux/commentSlice';
 import Notification from '@/components/Notification';
 import { RootState } from './redux/store';
+import { setnotifications } from './redux/notificaitionDataSlice';
+import { toast } from 'react-toastify';
 
 export default function page() {
   //pre fetching story and posts
@@ -45,11 +47,23 @@ export default function page() {
       console.error(error.message);
     }
   };
+  const fetchNotifications = async () => {
+    try {
+      const res = await axios.get('/api/notification');
+      if (res.status === 200) {
+        console.log(res.data.notification); // Logs the data fetched from API
+        dispatch(setnotifications(res.data.notification));
+      }
+    } catch (error: any) {
+      toast.error(`Error fetching notifications ${error.message}`);
+    }
+  };
 
   useEffect(() => {
     fetchStories();
     fetchPosts();
     fetchComments();
+    fetchNotifications()
   });
 
   const isNotificationActive = useSelector((state: RootState) => state.notification.isNotificationActive)
