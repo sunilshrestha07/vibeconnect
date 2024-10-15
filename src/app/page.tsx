@@ -51,7 +51,6 @@ export default function page() {
     try {
       const res = await axios.get('/api/notification');
       if (res.status === 200) {
-        console.log(res.data.notification); // Logs the data fetched from API
         dispatch(setnotifications(res.data.notification));
       }
     } catch (error: any) {

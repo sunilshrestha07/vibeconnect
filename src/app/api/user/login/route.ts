@@ -19,7 +19,8 @@ export async function POST(request: Request) {
     }
 
     //finding the user
-    const verifiedUser = await User.findOne({ email: email });
+    const verifiedUser = await User.findOne({ email: email }).populate('followers following',"userName avatar");
+
 
     //checking if user's password is verified or not
     const verifiedPassword = bcrpyt.compareSync(

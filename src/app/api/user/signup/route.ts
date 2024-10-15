@@ -22,7 +22,7 @@ export async function POST(request: Request) {
         // Check if the user exists and is verified
         if (user && user.isVerified) {
             return NextResponse.json(
-                { success: false, message: "User already exists and is verified" },
+                { success: false, message: "User with this email already exists " },
                 { status: 400 }
             );
         }

@@ -5,16 +5,24 @@ interface UserState {
     error: string | null;
     currentUser: User | null; // Update to use a specific user type
 }
-
-interface User {
-    avatar: string; 
-    userName:string,
-    _id:string,
-    email:string,
-    followers?: [];
-    following?: [];
-    bio:string
-}
+ interface User {
+    _id: string;
+    userName: string;
+    avatar: string;
+    email: string;
+    followers?: {
+      _id: string;
+      userName: string;
+      avatar: string;
+    }[];
+    following?: {
+      _id: string;
+      userName: string;
+      avatar: string;
+    }[];
+    bio: string;
+  }
+  
 
 
 const initialState: UserState = {

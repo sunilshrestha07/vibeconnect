@@ -25,6 +25,21 @@ export async function POST(request: Request) {
       );
     }
 
+    //check if the same data exist or not
+    const notificationExist = await Notification.findOneAndDelete({
+      notificationFor: notificationFor, // Ensure the correct field matching
+      notificationFrom: notificationFrom,
+      notificationType: notificationType,
+      post: post ? post : null, // Handle the case where post might be null or undefined
+    });
+    
+    if (notificationExist) {
+      return NextResponse.json(
+        { message: 'Notification already exist so deleted' },
+        { status: 404 }
+      );
+    }
+
     const notification = new Notification({
       notificationFor,
       notificationFrom,

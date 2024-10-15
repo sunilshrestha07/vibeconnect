@@ -76,4 +76,20 @@ export interface NotificationInterface {
   createdAt: Date;
   updatedAt: Date;
 }
-
+export interface User {
+  _id: string;
+  userName: string;
+  avatar: string;
+  email: string;
+  followers?: {
+    _id: string;
+    userName: string;
+    avatar: string;
+  }[];
+  following?: {
+    _id: string;
+    userName: string;
+    avatar: string;
+  }[];
+  bio: string;
+}

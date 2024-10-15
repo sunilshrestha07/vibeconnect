@@ -6,7 +6,7 @@ import Footbar from '@/components/Footbar';
 import SideMenu from '@/components/SideMenu';
 import Topbar from '@/components/Topbar';
 import './globals.css';
-import ReduxProvider from './redux/reduxProvider'; 
+import ReduxProvider from './redux/reduxProvider';
 import { usePathname } from 'next/navigation';
 import Recommendation from '@/components/Recommendation';
 import { ToastContainer } from 'react-toastify';
@@ -69,7 +69,7 @@ export default function RootLayout({
 
                   <div
                     className={`${
-                      pathname === '/' ? 'w-full h-full col-span-3' : 'hidden'
+                      pathname === '/' ? 'w-full h-full col-span-3 hidden xl:block' : 'hidden'
                     }`}
                   >
                     <Recommendation />

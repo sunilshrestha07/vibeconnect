@@ -28,8 +28,8 @@ export default function page() {
     try {
       const res = await axios.post('/api/user/logout');
       if (res.status === 200) {
-        router.replace('/login');
         dispatch(logout());
+        router.replace('/login');
       }
     } catch (error) {
       console.error(error);
