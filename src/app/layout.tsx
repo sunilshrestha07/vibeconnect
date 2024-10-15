@@ -51,12 +51,12 @@ export default function RootLayout({
 
               <div className="w-full h-full grid grid-cols-11 pt-12 sm:pt-0">
                 {/* Sidemenu for larger screens */}
-                <div className="w-full h-screen overflow-hidden bg-gray-200 hidden sm:flex sm:col-span-1 xl:col-span-2 border-r-[1px] border-gray-300">
+                <div className="w-full h-screen overflow-hidden bg-gray-200 hidden sm:flex sm:col-span-1 lg:col-span-2 border-r-[1px] border-gray-300">
                   <SideMenu />
                 </div>
 
                 {/* Main content */}
-                <div className="w-full h-screen bg-gray-200 col-span-11 sm:col-span-10 xl:col-span-9 grid grid-cols-8 overflow-auto">
+                <div className="w-full h-screen bg-gray-200 col-span-11 sm:col-span-10 lg:col-span-9 grid grid-cols-8 overflow-auto">
                   <div
                     className={`${
                       pathname === '/'

@@ -44,7 +44,9 @@ export default function Notification() {
   const allnotifications = useSelector(
     (state: RootState) => state.notificationData.notifications
   );
-  const currentUser = useSelector((state: RootState) => state.user.currentUser) as CurrentUser;
+  const currentUser = useSelector(
+    (state: RootState) => state.user.currentUser
+  ) as CurrentUser;
 
   const notifications = allnotifications.filter(
     (notification) => notification.notificationFor._id === currentUser?._id
@@ -58,7 +60,11 @@ export default function Notification() {
     }
   };
 
-  const handelFollowUser = async (user: { _id: string; userName: string; avatar: string }) => {
+  const handelFollowUser = async (user: {
+    _id: string;
+    userName: string;
+    avatar: string;
+  }) => {
     const notification = {
       notificationType: 'follow',
       notificationFor: user._id,
@@ -88,7 +94,7 @@ export default function Notification() {
 
   return (
     <>
-      <div className="w-full sm:w-1/2 h-screen sm:bg-none grid sm:grid-cols-3 fixed">
+      <div className="w-full sm:w-11/12 md:w-2/3 xl:w-1/2 h-screen sm:bg-none grid sm:grid-cols-3 fixed">
         <div className="flex h-screen flex-col gap-3 col-span-2 w-full bg-gray-200">
           <div className="w-full flex justify-between pt-5 px-3">
             <p className="text-2xl font-semibold">Notifications</p>
@@ -197,11 +203,17 @@ export default function Notification() {
                           </div>
                         </div>
                         <div className="w-2/5 sm:w-1/5">
-                          <p 
-                            className='px-1 py-2 rounded-lg bg-black text-white cursor-pointer' 
-                            onClick={() => handelFollowUser(notification.notificationFrom)}
+                          <p
+                            className="px-1 py-2 rounded-lg bg-black text-white cursor-pointer"
+                            onClick={() =>
+                              handelFollowUser(notification.notificationFrom)
+                            }
                           >
-                            {currentUser?.following?.includes(notification.notificationFrom._id) ? "Following" : "Follow back"}
+                            {currentUser?.following?.includes(
+                              notification.notificationFrom._id
+                            )
+                              ? 'Following'
+                              : 'Follow back'}
                           </p>
                         </div>
                       </div>

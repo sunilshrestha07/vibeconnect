@@ -12,6 +12,7 @@ import Notification from '@/components/Notification';
 import { RootState } from './redux/store';
 import { setnotifications } from './redux/notificaitionDataSlice';
 import { toast } from 'react-toastify';
+import Search from '@/components/Search';
 
 export default function page() {
   //pre fetching story and posts
@@ -62,10 +63,14 @@ export default function page() {
     fetchStories();
     fetchPosts();
     fetchComments();
-    fetchNotifications()
+    fetchNotifications();
   });
 
-  const isNotificationActive = useSelector((state: RootState) => state.notification.isNotificationActive)
+  const isNotificationActive = useSelector(
+    (state: RootState) => state.notification.isNotificationActive
+  );
+  const isSearchActive = useSelector((state:RootState)=>state.notification.isSearchActive)
+  console.log(isSearchActive)
   return (
     <>
       <div className="w-full relative ">
@@ -80,6 +85,12 @@ export default function page() {
         {isNotificationActive && (
           <div className=" absolute top-0 right-0 w-full ">
             <Notification />
+          </div>
+        )}
+
+        {isSearchActive && (
+          <div className=" absolute top-0 right-0 w-full ">
+            <Search />
           </div>
         )}
       </div>

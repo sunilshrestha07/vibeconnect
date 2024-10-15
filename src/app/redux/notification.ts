@@ -5,6 +5,7 @@ const notiticationSlice = createSlice({
   name: 'notification',
   initialState: {
     isNotificationActive: false,
+    isSearchActive: false,
   },
   reducers: {
     setNotificationActive: (state) => {
@@ -13,8 +14,14 @@ const notiticationSlice = createSlice({
     setNotificationNotActive: (state) => {
       state.isNotificationActive = false;
     },
+    setSearchActive: (state) => {
+      state.isSearchActive = true;
+    },
+    setSearchNotActive: (state) => {
+      state.isSearchActive = false;
+    },
   },
 });
 
-export const { setNotificationActive, setNotificationNotActive } = notiticationSlice.actions;
+export const { setNotificationActive, setNotificationNotActive ,setSearchActive,setSearchNotActive} = notiticationSlice.actions;
 export default notiticationSlice.reducer;
