@@ -54,7 +54,7 @@ export default function page() {
         dispatch(setnotifications(res.data.notification));
       }
     } catch (error: any) {
-      toast.error(`Error fetching notifications ${error.message}`);
+      console.log('Error while fetching notifications', error.message);
     }
   };
 
