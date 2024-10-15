@@ -6,8 +6,10 @@ import Posts from '@/components/Posts';
 import axios from 'axios';
 import { setStories } from './redux/storySlice';
 import { setPosts } from './redux/postSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setComments } from './redux/commentSlice';
+import Notification from '@/components/Notification';
+import { RootState } from './redux/store';
 
 export default function page() {
   //pre fetching story and posts
@@ -47,11 +49,13 @@ export default function page() {
   useEffect(() => {
     fetchStories();
     fetchPosts();
-    fetchComments()
-  })
+    fetchComments();
+  });
+
+  const isNotificationActive = useSelector((state: RootState) => state.notification.isNotificationActive)
   return (
     <>
-      <div className="w-full">
+      <div className="w-full relative ">
         <div className=" z-30">
           <Story />
         </div>
@@ -60,6 +64,11 @@ export default function page() {
             <Posts />
           </div>
         </div>
+        {isNotificationActive && (
+          <div className=" absolute top-0 right-0 w-full ">
+            <Notification />
+          </div>
+        )}
       </div>
     </>
   );

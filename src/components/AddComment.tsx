@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
-export default function AddComment({selectedPostId}: {selectedPostId: string}) {
+export default function AddComment({selectedPostId,selectedPostUser}: {selectedPostId: string,selectedPostUser:string}) {
   const [comment, setComment] = useState<string>('');
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const dispatch = useDispatch();
@@ -15,6 +15,12 @@ export default function AddComment({selectedPostId}: {selectedPostId: string}) {
   //handel commet submit
   const handelCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      const notification = {
+        notificationType: 'comment',
+        notificationFor: selectedPostUser,
+        notificationFrom: currentUser?._id,
+        post: selectedPostId,
+      };
       const formdata = {
         user:currentUser?._id,
         post:selectedPostId,
@@ -26,6 +32,11 @@ export default function AddComment({selectedPostId}: {selectedPostId: string}) {
         if(res.status === 200) {
           setComment('');
           dispatch(addComments(res.data.comment));
+        }
+        // Send the 'like' notification
+        const resn = await axios.post('/api/notification', notification);
+        if (resn.status === 200) {
+          console.log('Notification sent successfully');
         }
       } catch (error:any) {
         toast.error(error.message);

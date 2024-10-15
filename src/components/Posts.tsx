@@ -38,39 +38,71 @@ export default function Posts() {
     setDeleteModelActive(!deleteModelActive || setIdToDelete === null);
   };
 
-  const handelPostLikeAndUnlike = async (postId: string) => {
+  const handelPostLikeAndUnlike = async (postId: string, userId: string) => {
     if (!currentUser) return;
-
+  
+    const notification = {
+      notificationType: 'like',
+      notificationFor: userId,
+      notificationFrom: currentUser._id,
+      post: postId,
+    };
+  
     // Optimistically update the UI
     const updatedPost = allpost.find((post) => post._id === postId);
     if (updatedPost) {
       const isLiked = updatedPost.likes.includes(currentUser._id);
-      const newLikes = isLiked
-        ? updatedPost.likes.filter((id) => id !== currentUser._id)
-        : [...updatedPost.likes, currentUser._id];
-
-      dispatch(updatePost({ ...updatedPost, likes: newLikes }));
-    }
-
-    // Sync with the server
-    try {
-      await axios.put(`/api/post/${postId}`, {
-        userId: currentUser._id,
-      });
-    } catch (error) {
-      console.log('Error liking/unliking post');
-      // Revert the optimistic update if the server request fails
-      if (updatedPost) {
-        dispatch(updatePost(updatedPost));
+  
+      // If already liked, remove like and delete notification
+      if (isLiked) {
+        try {
+          // Optimistically update likes in UI
+          const newLikes = updatedPost.likes.filter((id) => id !== currentUser._id);
+          dispatch(updatePost({ ...updatedPost, likes: newLikes }));
+  
+          // Sync with the server to unlike the post
+          await axios.put(`/api/post/${postId}`, { userId: currentUser._id });
+  
+          // Delete the 'like' notification
+          await axios.delete('/api/notification', { data: notification });
+          console.log('Notification deleted successfully');
+        } catch (error) {
+          console.log('Error deleting notification or unliking post', error);
+  
+          // Revert optimistic update if an error occurs
+          dispatch(updatePost(updatedPost));
+        }
+      } else {
+        // If not liked, add like and send notification
+        try {
+          // Optimistically update likes in UI
+          const newLikes = [...updatedPost.likes, currentUser._id];
+          dispatch(updatePost({ ...updatedPost, likes: newLikes }));
+  
+          // Sync with the server to like the post
+          await axios.put(`/api/post/${postId}`, { userId: currentUser._id });
+  
+          // Send the 'like' notification
+          const res = await axios.post('/api/notification', notification);
+          if (res.status === 200) {
+            console.log('Notification sent successfully');
+          }
+        } catch (error) {
+          console.log('Error sending notification or liking post', error);
+  
+          // Revert optimistic update if an error occurs
+          dispatch(updatePost(updatedPost));
+        }
       }
     }
   };
+  
 
   //handel comment shwo and hide
   const handelCommentShowAndHide = (id: string) => {
     setCommentIsActive(!commentIsActive || selectedPostId !== id);
     setSelectedPostId(id);
-  }
+  };
 
   return (
     <>
@@ -143,7 +175,9 @@ export default function Posts() {
                     className="w-full h-full object-cover"
                     src={item.media.url}
                     alt="post image"
-                    onDoubleClick={() => handelPostLikeAndUnlike(item._id)}
+                    onDoubleClick={() =>
+                      handelPostLikeAndUnlike(item._id, item.user._id)
+                    }
                   />
                 </div>
 
@@ -155,14 +189,18 @@ export default function Posts() {
                         className="w-6 cursor-pointer"
                         src="/icons/love.png"
                         alt=""
-                        onClick={() => handelPostLikeAndUnlike(item._id)}
+                        onClick={() =>
+                          handelPostLikeAndUnlike(item._id, item.user._id)
+                        }
                       />
                     ) : (
                       <img
                         className="w-6 cursor-pointer "
                         src="/icons/like.png"
                         alt=""
-                        onClick={() => handelPostLikeAndUnlike(item._id)}
+                        onClick={() =>
+                          handelPostLikeAndUnlike(item._id, item.user._id)
+                        }
                       />
                     )}
                   </div>
@@ -212,7 +250,10 @@ export default function Posts() {
 
                   {/* //all comments */}
                   <div className="">
-                    <p className="text-sm sm:text-base opacity-70 cursor-pointer" onClick={()=>handelCommentShowAndHide(item._id)}>
+                    <p
+                      className="text-sm sm:text-base opacity-70 cursor-pointer"
+                      onClick={() => handelCommentShowAndHide(item._id)}
+                    >
                       View all comments
                     </p>
                     {commentIsActive && selectedPostId === item._id && (
@@ -224,7 +265,7 @@ export default function Posts() {
 
                   {/* add comment */}
                   <div className="w-full">
-                    <AddComment selectedPostId={item._id}/>
+                    <AddComment selectedPostId={item._id} selectedPostUser={item.user._id} />
                   </div>
                 </div>
               </div>

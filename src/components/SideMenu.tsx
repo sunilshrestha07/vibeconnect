@@ -1,10 +1,11 @@
-'use cli'
+'use client'
 
 
+import { setNotificationActive, setNotificationNotActive } from '@/app/redux/notification';
 import { RootState } from '@/app/redux/store';
 import Link from 'next/link';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function SideMenu() {
   const menu = [
@@ -14,7 +15,7 @@ export default function SideMenu() {
     { name: 'Reels', link: '/reel', icon: '/icons/reel.png' },
     {
       name: 'Notification',
-      link: '/notification',
+      link: '/',
       icon: '/icons/notification.png',
     },
     { name: 'Message', link: '/message', icon: '/icons/chat.png' },
@@ -22,6 +23,19 @@ export default function SideMenu() {
   ];
 
   const currentuser = useSelector((state: RootState) => state.user.currentUser);
+  const dispatch = useDispatch();
+  const isNotificationActive = useSelector((state: RootState) => state.notification.isNotificationActive)
+
+  const handelClick = (name: string) => {
+    if (name === "Notification") {
+      if (isNotificationActive) {
+        dispatch(setNotificationNotActive());
+      } else {
+        dispatch(setNotificationActive());
+      }
+    }
+  };
+
   return (
     <>
       <div className=" w-full h-screen m-4 xl:m-6 ">
@@ -51,7 +65,7 @@ export default function SideMenu() {
                   key={index}
                 >
                   <Link href={item.link}>
-                    <div className=" flex justify-start items-center">
+                    <div className=" flex justify-start items-center relative" onClick={()=>handelClick(item.name)}>
                       <div
                         className={`  rounded-full overflow-hidden object-cover  ${
                           item.name === 'Profile'
@@ -61,6 +75,9 @@ export default function SideMenu() {
                       >
                         <img className={`${item.name === 'Profile' ? 'w-full h-full object-cover' : 'w-full h-full'}`} src={`${item.name === 'Profile' ? currentuser?.avatar ||  '/avatar.png' : item.icon}`} alt="" />
                       </div>
+                      {item.name === 'Notification' && (
+                        <p className='absolute top-0 left-7 bg-red-500 w-2 aspect-square rounded-full'></p>
+                      )}
                       <div className=" hidden xl:flex">
                         <p className="ml-2 font-medium">{item.name}</p>
                       </div>
