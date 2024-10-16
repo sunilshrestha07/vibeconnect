@@ -8,6 +8,7 @@ import { RootState } from '@/app/redux/store';
 import Link from 'next/link';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 export default function Topbar() {
   const dispatch = useDispatch();
@@ -48,6 +49,7 @@ export default function Topbar() {
                 className="w-full h-full"
                 src="/icons/chat.png"
                 alt="message icon"
+                onClick={()=>toast.info('Message option not implemented yet')}
               />
             </Link>
           </div>

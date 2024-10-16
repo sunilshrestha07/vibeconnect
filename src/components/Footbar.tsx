@@ -5,13 +5,14 @@ import { RootState } from '@/app/redux/store';
 import Link from 'next/link';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 export default function Footbar() {
   const menu = [
     { name: 'Home', link: '/', icon: '/icons/home.png' },
     { name: 'Search', link: '/', icon: '/icons/search.png' },
     { name: 'Create', link: '/create', icon: '/icons/create.png' },
-    { name: 'Reels', link: '/reel', icon: '/icons/reel.png' },
+    { name: 'Reels', link: '/', icon: '/icons/reel.png' },
     { name: 'Profile', link: '/profile', icon: '/profile.jpg' },
   ];
 
@@ -26,6 +27,10 @@ export default function Footbar() {
       isSearchActive
         ? dispatch(setSearchNotActive())
         : dispatch(setSearchActive());
+    }
+
+    if(name === 'Message' || name === 'Reels') {
+      toast.info(`${name} option not implemented yet`);
     }
   }
   return (

@@ -56,7 +56,7 @@ export default function UserSaved({ userId }: any) {
                     className="absolute top-2 right-2 bg-white p-1 rounded-full cursor-pointer"
                     onClick={() => dispatch(removeSaved(post._id))}
                   >
-                    <img className="w-6" src="/icons/saved.png" alt="" />
+                    <img className="w-4 sm:w-6" src="/icons/saved.png" alt="" />
                   </div>
                 </div>
               ))}

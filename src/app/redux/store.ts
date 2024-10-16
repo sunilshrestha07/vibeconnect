@@ -2,7 +2,7 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import storage from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
 import userReducer from './UserSlice'
-import authReducer from './authSlice'
+import editReducer from './editSlice'
 import storyReducer from './storySlice'
 import postReducer from './postSlice'
 import commentReducer from './commentSlice'
@@ -13,7 +13,7 @@ import savedReducer from './savedSlice'
 // Combine your reducers into a root reducer
 const rootReducer = combineReducers({
     user: userReducer,
-    auth:authReducer,
+    edit:editReducer,
     stories:storyReducer,
     posts: postReducer,
     comments: commentReducer,

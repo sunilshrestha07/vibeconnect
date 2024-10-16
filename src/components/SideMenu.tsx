@@ -17,7 +17,7 @@ export default function SideMenu() {
     { name: 'Home', link: '/', icon: '/icons/home.png' },
     { name: 'Search', link: '/', icon: '/icons/search.png' },
     { name: 'Create', link: '/create', icon: '/icons/create.png' },
-    { name: 'Reels', link: '/reel', icon: '/icons/reel.png' },
+    { name: 'Reels', link: '/', icon: '/icons/reel.png' },
     {
       name: 'Notification',
       link: '/',
@@ -51,8 +51,8 @@ export default function SideMenu() {
         : dispatch(setSearchActive());
     }
 
-    if (name === 'Message') {
-      toast.info('Chat option not implemented yet');
+    if (name === 'Message' || name === 'Reels') {
+      toast.info(`${name} option not implemented yet`);
     }
   };
 

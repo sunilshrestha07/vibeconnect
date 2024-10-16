@@ -155,10 +155,8 @@ export default function page() {
               </div>
             </div>
             <div className="w-full ">
-              {selectedLink === 'Posts' ? (
+              {selectedLink === 'Posts' &&(
                 <UserPosts userId={user?._id} />
-              ) : (
-                <UserSaved userId={user?._id} />
               )}
             </div>
           </div>
