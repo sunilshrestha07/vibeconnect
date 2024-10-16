@@ -13,6 +13,8 @@ import { LoginInterface } from '@/app/interface/interface.declare';
 import { setStories } from '@/app/redux/storySlice';
 import { setPosts } from '@/app/redux/postSlice';
 import Oauth from '@/components/Oauth';
+import { setnotifications } from '@/app/redux/notificaitionDataSlice';
+import { setComments } from '@/app/redux/commentSlice';
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -47,6 +49,56 @@ export default function Login() {
       }
     }
   };
+
+  //pre fetching story and posts
+  const fetchStories = async () => {
+    try {
+      const res = await axios.get('/api/story');
+      if (res.status === 200) {
+        dispatch(setStories(res.data.allstory));
+      }
+    } catch (error: any) {
+      console.error(error.message);
+    }
+  };
+  const fetchPosts = async () => {
+    try {
+      const res = await axios.get('/api/post');
+      if (res.status === 200) {
+        dispatch(setPosts(res.data.allpost));
+      }
+    } catch (error: any) {
+      console.error(error.message);
+    }
+  };
+  const fetchComments = async () => {
+    try {
+      const res = await axios.get('/api/comment');
+      if (res.status === 200) {
+        dispatch(setComments(res.data.allcomments));
+        // console.log(res.data.allcomments);
+      }
+    } catch (error: any) {
+      console.error(error.message);
+    }
+  };
+  const fetchNotifications = async () => {
+    try {
+      const res = await axios.get('/api/notification');
+      if (res.status === 200) {
+        dispatch(setnotifications(res.data.notification));
+      }
+    } catch (error: any) {
+      console.log('Error while fetching notifications', error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchStories();
+    fetchPosts();
+    fetchComments();
+    fetchNotifications();
+  });
 
   
 
