@@ -239,12 +239,14 @@ export default function Posts() {
                     <div
                       className="w-full h-full object-cover"
                       onClick={toggleMute}
-                      // ref={(el) => (videoRefs.current[item._id] = el)}
+                      ref={(el) => {
+                        videoRefs.current[item._id] = el; // Store the element in the ref
+                      }}
                       id={item._id}
                     >
                       <ReactPlayer
                         url={item.media.url}
-                        playing={visiblePosts.includes(item._id)} 
+                        playing={visiblePosts.includes(item._id)}
                         // playing={true} // Auto play
                         loop={true} // Loop the video
                         controls={false}
