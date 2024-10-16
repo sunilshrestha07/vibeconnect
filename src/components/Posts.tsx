@@ -4,7 +4,7 @@ import { removePost, updatePost } from '@/app/redux/postSlice';
 import { RootState } from '@/app/redux/store';
 import axios from 'axios';
 import moment from 'moment';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Comments from './Comments';
 import AddComment from './AddComment';
@@ -12,6 +12,7 @@ import { addSaved, PostData, removeSaved } from '@/app/redux/savedSlice';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import ReactPlayer from 'react-player/lazy';
+import { set } from 'mongoose';
 
 export default function Posts() {
   const allpost = useSelector((state: RootState) => state.posts.posts);
@@ -25,6 +26,8 @@ export default function Posts() {
   const [commentIsActive, setCommentIsActive] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string>('');
   const savesPosts = useSelector((state: RootState) => state.saved.posts);
+  const [isMuted, setIsMuted] = useState(true);
+  const [visiblePosts, setVisiblePosts] = useState<string[]>([]);
 
   const handlePostDelete = async (id: string) => {
     try {
@@ -116,6 +119,44 @@ export default function Posts() {
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  //toggle mute
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+    }
+  };
+  const videoRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  // Function to observe when video comes into view
+  const observeVideo = useCallback(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visiblePostIds: string[] = [];
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            visiblePostIds.push(entry.target.id);
+          }
+        });
+        setVisiblePosts(visiblePostIds);
+      },
+      { threshold: 0.5 } // Trigger when 50% of the video is in view
+    );
+
+    // Attach observer to each video container
+    Object.values(videoRefs.current).forEach((videoRef) => {
+      if (videoRef) {
+        observer.observe(videoRef);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    observeVideo();
+  }, [observeVideo]);
+
   return (
     <>
       <div className="w-full h-full ">
@@ -195,12 +236,19 @@ export default function Posts() {
                       }
                     />
                   ) : (
-                    <div className="w-full h-full object-cover">
+                    <div
+                      className="w-full h-full object-cover"
+                      onClick={toggleMute}
+                      // ref={(el) => (videoRefs.current[item._id] = el)}
+                      id={item._id}
+                    >
                       <ReactPlayer
                         url={item.media.url}
-                        playing={true} // Auto play
+                        playing={visiblePosts.includes(item._id)} 
+                        // playing={true} // Auto play
                         loop={true} // Loop the video
                         controls={false}
+                        muted={isMuted}
                         config={{
                           file: {
                             attributes: {
