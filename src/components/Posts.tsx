@@ -4,7 +4,7 @@ import { removePost, updatePost } from '@/app/redux/postSlice';
 import { RootState } from '@/app/redux/store';
 import axios from 'axios';
 import moment from 'moment';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Comments from './Comments';
 import { set } from 'mongoose';
@@ -120,6 +120,8 @@ export default function Posts() {
     dispatch(addSaved(post));
   };
 
+  const videoRef = useRef<HTMLVideoElement>(null);
+
   return (
     <>
       <div className="w-full h-full ">
@@ -189,7 +191,8 @@ export default function Posts() {
 
                 {/* post image */}
                 <div className="w-full aspect-[9/8]  overflow-hidden">
-                  <img
+                  {item.media.type === 'image'?(
+                    <img
                     className="w-full h-full object-cover"
                     src={item.media.url}
                     alt="post image"
@@ -197,6 +200,16 @@ export default function Posts() {
                       handelPostLikeAndUnlike(item._id, item.user._id)
                     }
                   />
+                  ):(
+                    <video
+                    
+                    className="w-full h-full object-cover"
+                    src={item.media.url}
+                    autoPlay
+                    
+                    preload="true"
+                  />
+                  )}
                 </div>
 
                 {/* comment and like section */}
