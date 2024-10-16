@@ -9,6 +9,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import Comments from './Comments';
 import { set } from 'mongoose';
 import AddComment from './AddComment';
+import { addSaved, PostData, removeSaved, setSaved } from '@/app/redux/savedSlice';
+import { Post } from '@/app/interface/interface.declare';
+import { toast } from 'react-toastify';
 
 export default function Posts() {
   const allpost = useSelector((state: RootState) => state.posts.posts);
@@ -21,6 +24,7 @@ export default function Posts() {
   );
   const [commentIsActive, setCommentIsActive] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string>('');
+  const savesPosts = useSelector((state: RootState) => state.saved.posts);
 
   const handlePostDelete = async (id: string) => {
     try {
@@ -40,35 +44,37 @@ export default function Posts() {
 
   const handelPostLikeAndUnlike = async (postId: string, userId: string) => {
     if (!currentUser) return;
-  
+
     const notification = {
       notificationType: 'like',
       notificationFor: userId,
       notificationFrom: currentUser._id,
       post: postId,
     };
-  
+
     // Optimistically update the UI
     const updatedPost = allpost.find((post) => post._id === postId);
     if (updatedPost) {
       const isLiked = updatedPost.likes.includes(currentUser._id);
-  
+
       // If already liked, remove like and delete notification
       if (isLiked) {
         try {
           // Optimistically update likes in UI
-          const newLikes = updatedPost.likes.filter((id) => id !== currentUser._id);
+          const newLikes = updatedPost.likes.filter(
+            (id) => id !== currentUser._id
+          );
           dispatch(updatePost({ ...updatedPost, likes: newLikes }));
-  
+
           // Sync with the server to unlike the post
           await axios.put(`/api/post/${postId}`, { userId: currentUser._id });
-  
+
           // Delete the 'like' notification
           await axios.delete('/api/notification', { data: notification });
           console.log('Notification deleted successfully');
         } catch (error) {
           console.log('Error deleting notification or unliking post', error);
-  
+
           // Revert optimistic update if an error occurs
           dispatch(updatePost(updatedPost));
         }
@@ -78,10 +84,10 @@ export default function Posts() {
           // Optimistically update likes in UI
           const newLikes = [...updatedPost.likes, currentUser._id];
           dispatch(updatePost({ ...updatedPost, likes: newLikes }));
-  
+
           // Sync with the server to like the post
           await axios.put(`/api/post/${postId}`, { userId: currentUser._id });
-  
+
           // Send the 'like' notification
           const res = await axios.post('/api/notification', notification);
           if (res.status === 200) {
@@ -89,19 +95,23 @@ export default function Posts() {
           }
         } catch (error) {
           console.log('Error sending notification or liking post', error);
-  
+
           // Revert optimistic update if an error occurs
           dispatch(updatePost(updatedPost));
         }
       }
     }
   };
-  
 
   //handel comment shwo and hide
   const handelCommentShowAndHide = (id: string) => {
     setCommentIsActive(!commentIsActive || selectedPostId !== id);
     setSelectedPostId(id);
+  };
+
+  //handel post saved
+  const handelPostSave = async (post: PostData) => {
+    dispatch(addSaved(post));
   };
 
   return (
@@ -182,30 +192,60 @@ export default function Posts() {
                 </div>
 
                 {/* comment and like section */}
-                <div className="w-full  flex gap-4 p-2">
-                  <div className="">
-                    {currentUser && item.likes.includes(currentUser._id) ? (
-                      <img
-                        className="w-6 cursor-pointer"
-                        src="/icons/love.png"
-                        alt=""
-                        onClick={() =>
-                          handelPostLikeAndUnlike(item._id, item.user._id)
-                        }
-                      />
-                    ) : (
-                      <img
-                        className="w-6 cursor-pointer "
-                        src="/icons/like.png"
-                        alt=""
-                        onClick={() =>
-                          handelPostLikeAndUnlike(item._id, item.user._id)
-                        }
-                      />
-                    )}
+                <div className="w-full flex justify-between  p-2">
+                  <div className=" flex gap-2 ">
+                    <div className="">
+                      {currentUser && item.likes.includes(currentUser._id) ? (
+                        <img
+                          className="w-6 cursor-pointer"
+                          src="/icons/love.png"
+                          alt=""
+                          onClick={() =>
+                            handelPostLikeAndUnlike(item._id, item.user._id)
+                          }
+                        />
+                      ) : (
+                        <img
+                          className="w-6 cursor-pointer "
+                          src="/icons/like.png"
+                          alt=""
+                          onClick={() =>
+                            handelPostLikeAndUnlike(item._id, item.user._id)
+                          }
+                        />
+                      )}
+                    </div>
+                    <div className="">
+                      <img className="w-6" src="/icons/comment.png" alt="" />
+                    </div>
                   </div>
+                  {/* //add to saved */}
                   <div className="">
-                    <img className="w-6" src="/icons/comment.png" alt="" />
+                    <div className="">
+                      {savesPosts.some((saved) => saved._id === item._id) ? (
+                        // If the post is saved, show the "saved" icon
+                        <img
+                          className="w-6 cursor-pointer"
+                          src="/icons/bsaved.png"
+                          alt="saved"
+                          onClick={() => {
+                            dispatch(removeSaved(item._id));
+                            toast.success("Post removed from saved");
+                          }} 
+                        />
+                      ) : (
+                        // If the post is not saved, show the "un-saved" icon
+                        <img
+                          className="w-6 cursor-pointer"
+                          src="/icons/saved.png"
+                          alt="unsaved"
+                          onClick={() => {
+                            dispatch(addSaved(item));
+                            toast.success("Post saved");
+                          }} // This should handle save action
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -221,7 +261,12 @@ export default function Posts() {
                   <div className="p-2">
                     <p className=" ">
                       <div className=" flex gap-3 text-start ">
-                        <p className=' text-sm sm:text-base'><span className='font-medium '>{item.user.userName}</span> { ' '} {item.discription}</p>
+                        <p className=" text-sm sm:text-base">
+                          <span className="font-medium ">
+                            {item.user.userName}
+                          </span>{' '}
+                          {item.discription}
+                        </p>
                       </div>
                     </p>
                   </div>
@@ -259,7 +304,10 @@ export default function Posts() {
 
                   {/* add comment */}
                   <div className="w-full">
-                    <AddComment selectedPostId={item._id} selectedPostUser={item.user._id} />
+                    <AddComment
+                      selectedPostId={item._id}
+                      selectedPostUser={item.user._id}
+                    />
                   </div>
                 </div>
               </div>

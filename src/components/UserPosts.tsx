@@ -34,7 +34,7 @@ export default function UserPosts({userId}:any) {
                       <div className="flex flex-col items-center justify-center">
                         <img
                           className="w-4 sm:w-6"
-                          src="/icons/love.png"
+                          src="/icons/wlike.png"
                           alt=""
                         />
                         <p>{post.likes.length}</p>

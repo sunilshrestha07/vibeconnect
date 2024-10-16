@@ -8,6 +8,7 @@ import postReducer from './postSlice'
 import commentReducer from './commentSlice'
 import notificationReducer from './notification'
 import notificationDataReducer from './notificaitionDataSlice'
+import savedReducer from './savedSlice'
 
 // Combine your reducers into a root reducer
 const rootReducer = combineReducers({
@@ -17,7 +18,8 @@ const rootReducer = combineReducers({
     posts: postReducer,
     comments: commentReducer,
     notification:notificationReducer,
-    notificationData:notificationDataReducer
+    notificationData:notificationDataReducer,
+    saved: savedReducer
 });
 
 // Configuration for Redux Persist

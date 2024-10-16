@@ -18,24 +18,21 @@ export interface StoryData {
 }
 
 export interface Post {
-  _id: string;
-  discription?: string;
+  _id: string; // ID for the post
+  discription?: string; // Optional description
   media: {
     url: string;
     type: string;
-  };
-  likes: ObjectId[];
-  comments: ObjectId[];
+  }; // Array of image URLs
+  likes: string[]; // Array of ObjectId references to User (for likes)
+  comments: string[]; // Array of ObjectId references to User (for comments)
   user: {
     _id: string;
     userName: string;
     avatar: string;
-  };
-  createdAt: Date;
-  updatedAt: Date;
-  followers?: ObjectId[];
-  following?: ObjectId[];
-  bio: string;
+  }; // Owner of the post (reference to User)
+  createdAt: Date; // Timestamp for when the post was created
+  updatedAt: Date; // Timestamp for when the post was last updated
 }
 
 export interface LoginInterface {
