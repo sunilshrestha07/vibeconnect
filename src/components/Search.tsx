@@ -1,9 +1,11 @@
 'use client';
 
 import { User } from '@/app/interface/interface.declare';
+import { setSearchNotActive } from '@/app/redux/notification';
 import { RootState } from '@/app/redux/store';
 import { loginSuccess } from '@/app/redux/UserSlice';
 import axios from 'axios';
+import Link from 'next/link';
 import React, { use, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -12,10 +14,10 @@ export default function Search() {
   const [searchInput, setSearchInput] = useState<string>('');
   const dispatch = useDispatch();
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
-
   const allUsers = allUsersData.filter((user) =>
     user.userName.toLowerCase().startsWith(searchInput.toLowerCase())
   );
+
 
   //fetching all the users
   const fetchAllUser = async () => {
@@ -62,14 +64,27 @@ export default function Search() {
       console.error(error);
     }
   };
+
+  //handel click
+  const handelClick = () => {
+    dispatch(setSearchNotActive());
+  }
   return (
     <>
       <div className="w-full h-screen ">
         <div className="w-full  sm:w-11/12 md:w-2/3 xl:w-1/2 h-screen sm:bg-none grid sm:grid-cols-3 fixed">
           <div className="col-span-2 w-full h-screen bg-gray-300">
-            <div className="pt-5 px-3">
-              <p className="text-2xl font-semibold">Search</p>
+          <div className="w-full flex justify-between pt-5 px-3">
+            <p className="text-2xl font-semibold">Search</p>
+            <div className="">
+              <img
+                className="w-8 cursor-pointer"
+                src="/icons/close.png"
+                alt=""
+                onClick={handelClick}
+              />
             </div>
+          </div>
             <div className="w-full flex justify-start px-3 items-center py-5 border-b-[1px] border-gray-400">
               <div className="w-11/12">
                 <input
@@ -88,31 +103,23 @@ export default function Search() {
                 {searchInput &&
                   allUsers.map((user) => (
                     <div key={user._id}>
-                      <div className="w-full flex gap-2 justify-between items-center py-3 cursor-pointer">
-                        <div className="w-10 aspect-square rounded-full overflow-hidden">
-                          <img
-                            className="w-full h-full object-cover"
-                            src={user.avatar || '/avatar.png'}
-                            alt={user.userName}
-                          />
-                        </div>
-                        <div className="w-full flex gap-1">
-                          <div className="text-sm w-4/5">
-                            <p className="font-medium">{user.userName}</p>
-                            <p className="text-xs">{user.email}</p>
+                      <Link href={`/profile/${user._id}`}>
+                        <div className="w-full flex gap-2 justify-between items-center py-3 cursor-pointer" onClick={()=>dispatch(setSearchNotActive())}>
+                          <div className="w-10 aspect-square rounded-full overflow-hidden">
+                            <img
+                              className="w-full h-full object-cover"
+                              src={user.avatar || '/avatar.png'}
+                              alt={user.userName}
+                            />
                           </div>
-                          {/* <div className="w-1/5">
-                            <p
-                              className="cursor-pointer font-normal"
-                              onClick={() => handelFollowUser(user._id)}
-                            >
-                              {currentUser?.following?.includes(user._id)
-                                ? 'Following'
-                                : 'Follow'}
-                            </p>
-                          </div> */}
+                          <div className="w-full flex gap-1">
+                            <div className="text-sm w-4/5">
+                              <p className="font-medium">{user.userName}</p>
+                              <p className="text-xs">{user.email}</p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      </Link>
                     </div>
                   ))}
               </div>

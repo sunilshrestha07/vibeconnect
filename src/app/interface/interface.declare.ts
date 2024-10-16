@@ -93,3 +93,17 @@ export interface User {
   }[];
   bio: string;
 }
+
+
+export interface SingleUser {
+  _id: string;
+  userName: string;
+  avatar: string;
+  email: string;
+  followers?: string[]
+  following?: string[]
+  bio: string;
+}
+
+
+

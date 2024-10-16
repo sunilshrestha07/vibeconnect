@@ -3,12 +3,12 @@ import Image from 'next/image';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-export default function UserPosts() {
-  const currentUser = useSelector((state: RootState) => state.user.currentUser);
-  const posts = useSelector((state: RootState) => state.posts.posts);
+export default function UserPosts({userId}:any) {
+  const posts = useSelector((state: RootState) => state.posts.posts)
+  console.log("User id",userId)
 
   //filtered posts
-  const usersPosts = posts.filter((post) => post.user._id === currentUser?._id);
+  const usersPosts = posts.filter((post) => post.user._id === userId);
   return (
     <>
       <div className="w-full h-full   ">

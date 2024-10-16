@@ -3,12 +3,11 @@ import Image from 'next/image';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-export default function UserSaved() {
-  const currentUser = useSelector((state: RootState) => state.user.currentUser);
+export default function UserSaved({userId}: any) {
   const posts = useSelector((state: RootState) => state.posts.posts);
 
   //filtered posts
-  const userSaved = posts.filter((post) => post.user._id === currentUser?._id);
+  const userSaved = posts.filter((post) => post.user._id === userId);
     // const userSaved = 0
   return (
     <>
