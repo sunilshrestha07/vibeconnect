@@ -7,17 +7,11 @@ import moment from 'moment';
 import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Comments from './Comments';
-import { set } from 'mongoose';
 import AddComment from './AddComment';
-import {
-  addSaved,
-  PostData,
-  removeSaved,
-  setSaved,
-} from '@/app/redux/savedSlice';
-import { Post } from '@/app/interface/interface.declare';
+import { addSaved, PostData, removeSaved } from '@/app/redux/savedSlice';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
+import ReactPlayer from 'react-player/lazy';
 
 export default function Posts() {
   const allpost = useSelector((state: RootState) => state.posts.posts);
@@ -191,24 +185,36 @@ export default function Posts() {
 
                 {/* post image */}
                 <div className="w-full aspect-[9/8]  overflow-hidden">
-                  {item.media.type === 'image'?(
+                  {item.media.type === 'image' ? (
                     <img
-                    className="w-full h-full object-cover"
-                    src={item.media.url}
-                    alt="post image"
-                    onDoubleClick={() =>
-                      handelPostLikeAndUnlike(item._id, item.user._id)
-                    }
-                  />
-                  ):(
-                    <video
-                    
-                    className="w-full h-full object-cover"
-                    src={item.media.url}
-                    autoPlay
-                    
-                    preload="true"
-                  />
+                      className="w-full h-full object-cover"
+                      src={item.media.url}
+                      alt="post image"
+                      onDoubleClick={() =>
+                        handelPostLikeAndUnlike(item._id, item.user._id)
+                      }
+                    />
+                  ) : (
+                    <div className="w-full h-full object-cover">
+                      <ReactPlayer
+                        url={item.media.url}
+                        playing={true} // Auto play
+                        loop={true} // Loop the video
+                        controls={false}
+                        config={{
+                          file: {
+                            attributes: {
+                              controlsList: 'nodownload', // disable download button
+                            },
+                          },
+                        }}
+                        width="100%"
+                        height="100%"
+                        onDoubleClick={() =>
+                          handelPostLikeAndUnlike(item._id, item.user._id)
+                        }
+                      />
+                    </div>
                   )}
                 </div>
 
