@@ -243,7 +243,7 @@ export default function EditProfile() {
 
         {/* //close button */}
         <div
-          className=" absolute top-5 right-5 p-1 bg-white rounded-full"
+          className=" absolute top-5 right-5 p-1 bg-white rounded-full cursor-pointer"
           onClick={() => dispatch(setIsEditNotActive())}
         >
           <img className="w-6 sm:w-8" src="/icons/close.png" alt="" />

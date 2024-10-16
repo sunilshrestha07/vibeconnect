@@ -9,9 +9,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import Comments from './Comments';
 import { set } from 'mongoose';
 import AddComment from './AddComment';
-import { addSaved, PostData, removeSaved, setSaved } from '@/app/redux/savedSlice';
+import {
+  addSaved,
+  PostData,
+  removeSaved,
+  setSaved,
+} from '@/app/redux/savedSlice';
 import { Post } from '@/app/interface/interface.declare';
 import { toast } from 'react-toastify';
+import Link from 'next/link';
 
 export default function Posts() {
   const allpost = useSelector((state: RootState) => state.posts.posts);
@@ -129,13 +135,15 @@ export default function Posts() {
                 <div className=" flex items-center justify-between gap-3 px-2 py-1 ">
                   {/* user info */}
                   <div className=" flex  gap-3 items-center">
-                    <div className=" w-10 aspect-square  overflow-hidden rounded-full">
-                      <img
-                        className=" w-full h-full object-cover"
-                        src={item.user.avatar || '/avatar.png'}
-                        alt="user avatar"
-                      />
-                    </div>
+                    <Link href={`/profile/${item.user._id}`}>
+                      <div className=" w-10 aspect-square  overflow-hidden rounded-full cursor-pointer">
+                        <img
+                          className=" w-full h-full object-cover"
+                          src={item.user.avatar || '/avatar.png'}
+                          alt="user avatar"
+                        />
+                      </div>
+                    </Link>
                     <p className=" text-sm font-semibold text-black">
                       {item.user.userName}
                     </p>
@@ -230,8 +238,8 @@ export default function Posts() {
                           alt="saved"
                           onClick={() => {
                             dispatch(removeSaved(item._id));
-                            toast.success("Post removed from saved");
-                          }} 
+                            toast.success('Post removed from saved');
+                          }}
                         />
                       ) : (
                         // If the post is not saved, show the "un-saved" icon
@@ -241,7 +249,7 @@ export default function Posts() {
                           alt="unsaved"
                           onClick={() => {
                             dispatch(addSaved(item));
-                            toast.success("Post saved");
+                            toast.success('Post saved');
                           }} // This should handle save action
                         />
                       )}

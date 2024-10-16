@@ -1,7 +1,7 @@
 'use client';
 
 import Story from '@/components/Story';
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import Posts from '@/components/Posts';
 import axios from 'axios';
 import { setStories } from './redux/storySlice';
@@ -73,6 +73,7 @@ export default function page() {
   console.log(isSearchActive)
   return (
     <>
+      <Suspense fallback={<div>Loading...</div>}>
       <div className="w-full relative ">
         <div className=" z-30">
           <Story />
@@ -94,6 +95,7 @@ export default function page() {
           </div>
         )}
       </div>
+      </Suspense>
     </>
   );
 }

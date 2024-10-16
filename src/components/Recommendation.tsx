@@ -98,7 +98,7 @@ export default function Recommendation() {
                 <div className="w-16 aspect-square rounded-full overflow-hidden">
                   <img
                     className="w-full h-full object-cover"
-                    src={currentUser?.avatar}
+                    src={currentUser?.avatar || '/avatar.png'}
                     alt=""
                   />
                 </div>

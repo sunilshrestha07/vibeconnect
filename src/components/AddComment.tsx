@@ -45,7 +45,7 @@ export default function AddComment({selectedPostId,selectedPostUser}: {selectedP
   }
   return (
     <>
-      <div className=" mt-1 w-full ">
+      <div  className=" mt-1 w-full ">
         <form className='flex w-full justify-between' onSubmit={handelCommentSubmit}>
           <input
             className=" bg-transparent p-1 outline-none w-10/12 "
