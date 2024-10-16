@@ -34,6 +34,7 @@ export default function page() {
       const res = await axios.post('/api/user/logout');
       if (res.status === 200) {
         dispatch(logout());
+        localStorage.clear();
         router.replace('/login');
       }
     } catch (error) {
