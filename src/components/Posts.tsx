@@ -237,7 +237,7 @@ export default function Posts() {
                     />
                   ) : (
                     <div
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover relative"
                       onClick={toggleMute}
                       ref={(el) => {
                         videoRefs.current[item._id] = el; // Store the element in the ref
@@ -264,6 +264,9 @@ export default function Posts() {
                           handelPostLikeAndUnlike(item._id, item.user._id)
                         }
                       />
+                      <div className="absolute top-5 right-5 bg-white p-1 rounded-full">
+                        {isMuted ? <img className='w-5' src="/icons/mute.png" alt="" /> : <img className='w-5' src="/icons/unmute.png" alt="" />}
+                      </div>
                     </div>
                   )}
                 </div>
