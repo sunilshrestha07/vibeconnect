@@ -97,11 +97,11 @@ export default function page() {
                         {user?.userName}
                       </p>
                     </div>
-                    <div className="">
+                    {/* <div className="">
                       <p className="text-xs sm:text-base font-semibold px-1 sm:px-3 py-1 rounded-lg bg-gray-300">
                         Edit Profile
                       </p>
-                    </div>
+                    </div> */}
                     <div className="text-xs sm:text-base font-semibold px-1 sm:px-3 py-1 rounded-lg bg-gray-300 cursor-pointer" onClick={handelFollowUser}>
                      {user && currentUser?.following?.includes(user?._id ) ? 'Unfollow' : 'Follow'}
                     </div>

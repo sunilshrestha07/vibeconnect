@@ -50,9 +50,9 @@ export default function page() {
         <div className=" w-full  sm:w-10/12 h-full ">
           <div className=" w-full flex  justify-center pb-6 sm:pb-10 border-b-2  border-gray-500">
             <div className="w-full">
-              <div className=" flex gap-4 sm:gap-16 md:gap-24 mt-10 text-sm md:text-xl ">
+              <div className=" flex gap-2 sm:gap-16 md:gap-24 mt-10 text-sm md:text-xl ">
                 {/* avatar */}
-                <div className="w-32 sm:w-40 aspect-square rounded-full overflow-hidden ">
+                <div className="w-28 sm:w-40 aspect-square rounded-full overflow-hidden ">
                   <img
                     className="w-full h-full object-cover object-center"
                     src={currentUser?.avatar || 'avatar.png'}
