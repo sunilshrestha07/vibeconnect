@@ -11,9 +11,7 @@ import { setComments } from './redux/commentSlice';
 import Notification from '@/components/Notification';
 import { RootState } from './redux/store';
 import { setnotifications } from './redux/notificaitionDataSlice';
-import { toast } from 'react-toastify';
 import Search from '@/components/Search';
-import SpecificPost from '@/components/SpecificPost';
 
 export default function page() {
   //pre fetching story and posts
