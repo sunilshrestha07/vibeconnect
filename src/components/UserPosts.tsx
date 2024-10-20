@@ -1,11 +1,15 @@
+'use client'
+
 import { RootState } from '@/app/redux/store';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
 export default function UserPosts({userId}:any) {
   const posts = useSelector((state: RootState) => state.posts.posts)
   console.log("User id",userId)
+  const router = useRouter()
 
   //filtered posts
   const usersPosts = posts.filter((post) => post.user._id === userId);
@@ -17,10 +21,12 @@ export default function UserPosts({userId}:any) {
             <div className=" w-full grid grid-cols-3 gap-1">
               {usersPosts.map((post) => (
                 <div
-                  className="w-full aspect-[10/11] overflow-hidden col-span-1 relative group"
+                  className="w-full aspect-[10/11] overflow-hidden col-span-1 relative group cursor-pointer"
                   key={post._id}
+                  onClick={()=>router.push(`/post/${post._id}`)}
                 >
-                  <Image
+                  {post.media.type === 'image' ? (
+                    <Image
                     src={post.media.url}
                     className="w-full h-full object-cover"
                     alt="post image"
@@ -28,6 +34,15 @@ export default function UserPosts({userId}:any) {
                     height={500}
                     quality={80}
                   />
+                  ):(
+                    <video
+                      src={post.media.url}
+                      className="w-full h-full object-cover"
+                      width={500}
+                      height={500}
+                      controls={false}
+                    />
+                  )}
                   {/* The hidden div that appears on hover */}
                   <div className="absolute top-0 left-0 w-full h-full backdrop-brightness-75 flex justify-center items-center text-white cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm sm:text-xl">
                     <div className="flex gap-2">

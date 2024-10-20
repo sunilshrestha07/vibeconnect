@@ -1,5 +1,6 @@
 import dbConnect from '@/lib/db';
 import Comment from '@/models/commentModel';
+import Post from '@/models/postModel';
 import { NextResponse } from 'next/server';
 
 //getting all the comments
@@ -32,10 +33,15 @@ export async function POST(request: Request) {
             user,
             post
         })
-
         await newcomment.save();
+        // Update the post with the new comment ID
+        const updatedPost = await Post.findByIdAndUpdate(
+          { _id: post },
+          { $addToSet: { comments: newcomment._id } },
+          { new: true } // return the updated document
+      );
 
-        return NextResponse.json({message:"Successfully created comment",comment:newcomment},{status: 200})
+        return NextResponse.json({message:"Successfully created comment",comment:updatedPost},{status: 200})
     } catch (error: any) {
         return NextResponse.json({message:`Error creating comment ${error.message}`},{status: 500})
     }

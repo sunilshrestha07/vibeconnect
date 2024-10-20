@@ -144,11 +144,21 @@ export default function Notification() {
                         </div>
                         <div className="w-1/5">
                           <div className="w-10 aspect-[9/10] overflow-hidden bg-yellow-500">
-                            <img
-                              className="w-full h-full object-cover"
-                              src={notification.post?.media.url}
-                              alt="post image"
-                            />
+                            {notification.post?.media.type === 'image' ? (
+                              <img
+                                className="w-full h-full object-cover"
+                                src={notification.post?.media.url}
+                                alt="post image"
+                              />
+                            ) : (
+                              <video
+                                src={notification.post?.media.url}
+                                className="w-full h-full object-cover"
+                                width={500}
+                                height={500}
+                                controls={false}
+                              />
+                            )}
                           </div>
                         </div>
                       </div>
