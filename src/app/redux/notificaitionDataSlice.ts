@@ -21,6 +21,13 @@ interface NotificationData {
       type: string;
     };
   };
+  reel?: {
+    _id: string;
+    media: {
+      url: string;
+      type: string;
+    };
+  };
   notificationType: string;
   createdAt: Date;
   updatedAt: Date;

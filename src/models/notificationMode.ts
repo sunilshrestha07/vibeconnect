@@ -10,6 +10,10 @@ const notificationSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref : "Post",
     },
+    reel: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Reel",  // Reference to the Reel model
+    },
     notificationType: {
         type: String,
         enum: ['like', 'comment', 'follow'],

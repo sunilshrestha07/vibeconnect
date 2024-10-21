@@ -94,8 +94,8 @@ export default function Notification() {
 
   return (
     <>
-      <div className="w-full sm:w-11/12 md:w-2/3 xl:w-1/2 h-screen sm:bg-none grid sm:grid-cols-3 fixed">
-        <div className="flex h-screen flex-col gap-3 col-span-2 w-full bg-gray-200">
+      <div className="w-full sm:w-11/12 md:w-2/3 xl:w-1/2 h-screen sm:bg-none grid sm:grid-cols-3 fixed ">
+        <div className="flex h-screen flex-col gap-3 col-span-2 w-full bg-gray-200 overflow-y-scroll">
           <div className="w-full flex justify-between pt-5 px-3">
             <p className="text-2xl font-semibold">Notifications</p>
             <div className="">
@@ -132,7 +132,7 @@ export default function Notification() {
                               <span className="font-semibold">
                                 {notification.notificationFrom.userName}
                               </span>{' '}
-                              liked your post
+                              {notification.post ? 'liked your post' : 'liked your reel'}
                             </p>
                             <p className="text-xs">
                               {moment(notification.createdAt)
@@ -143,21 +143,27 @@ export default function Notification() {
                           </div>
                         </div>
                         <div className="w-1/5">
-                          <div className="w-10 aspect-[9/10] overflow-hidden bg-yellow-500">
-                            {notification.post?.media.type === 'image' ? (
-                              <img
-                                className="w-full h-full object-cover"
-                                src={notification.post?.media.url}
-                                alt="post image"
-                              />
+                          <div className="w-10 aspect-[9/10] overflow-hidden ">
+                            {notification.post ? (
+                              <div className=""></div>
                             ) : (
-                              <video
-                                src={notification.post?.media.url}
-                                className="w-full h-full object-cover"
-                                width={500}
-                                height={500}
-                                controls={false}
-                              />
+                              <div className="">
+                                {notification.reel?.media.type === 'image' ? (
+                                  <img
+                                    className="w-full h-full object-cover"
+                                    src={notification.reel?.media.url}
+                                    alt="post image"
+                                  />
+                                ) : (
+                                  <video
+                                    src={notification.reel?.media.url}
+                                    className="w-full h-full object-cover"
+                                    width={500}
+                                    height={500}
+                                    controls={false}
+                                  />
+                                )}
+                              </div>
                             )}
                           </div>
                         </div>

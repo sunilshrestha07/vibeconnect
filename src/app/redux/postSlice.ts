@@ -23,10 +23,12 @@ export interface PostData {
 // Define the initial state, which is an array of StoryData
 interface PostState {
   posts: PostData[];
+  reels: PostData[];
 }
 
 const initialState: PostState = {
   posts: [],
+  reels: [],
 };
 
 export const postSlice = createSlice({
@@ -38,9 +40,19 @@ export const postSlice = createSlice({
       state.posts = action.payload;
     },
 
+    // action to set reels
+    setReels: (state, action: PayloadAction<PostData[]>) => {
+      state.reels = action.payload;
+    },
+
     // Action to add a single story
     addPost: (state, action: PayloadAction<PostData>) => {
       state.posts.push(action.payload);
+    },
+
+    // add reel
+    addReel: (state, action: PayloadAction<PostData>) => {
+      state.reels.push(action.payload);
     },
 
     // Action to update a story
@@ -52,6 +64,15 @@ export const postSlice = createSlice({
         state.posts[index] = action.payload;
       }
     },
+    // Action to update a reel
+    updateReel: (state, action: PayloadAction<PostData>) => {
+      const index = state.reels.findIndex(
+        (reel) => reel._id === action.payload._id
+      );
+      if (index !== -1) {
+        state.reels[index] = action.payload;
+      }
+    },
 
     // Action to remove a story by ID
     removePost: (state, action: PayloadAction<string>) => {
@@ -59,11 +80,16 @@ export const postSlice = createSlice({
         (post) => post._id !== action.payload
       );
     },
+    removeReel: (state, action: PayloadAction<string>) => {
+      state.reels = state.reels.filter(
+        (reel) => reel._id !== action.payload
+      );
+    },
   },
 });
 
 // Export actions
-export const { setPosts, addPost, updatePost, removePost } = postSlice.actions;
+export const { setPosts, addPost, updatePost, removePost ,setReels, addReel, removeReel, updateReel} = postSlice.actions;
 
 // Export reducer
 export default postSlice.reducer;

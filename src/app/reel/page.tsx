@@ -1,16 +1,20 @@
 'use client';
 
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Mousewheel } from 'swiper/modules';
 import 'swiper/css';
 import { useRouter } from 'next/navigation';
+import { updateReel } from '../redux/postSlice';
+import axios from 'axios';
 
 export default function Page() {
-  const stories = useSelector((state: RootState) => state.stories.stories);
+  const reels = useSelector((state: RootState) => state.posts.reels);
   const router = useRouter();
+  const currentUser = useSelector((state: RootState) => state.user.currentUser);
+  const dispatch = useDispatch();
 
   const handleSlideChange = (swiper: any) => {
     console.log(`Current slide index: ${swiper.activeIndex}`);
@@ -19,6 +23,68 @@ export default function Page() {
   // Handle close
   const handleClose = () => {
     router.back();
+  };
+
+  //handel reel like
+  const handelReelLikeAndUnlike = async (reelId: string, userId: string) => {
+    if (!currentUser) return;
+
+    const notification = {
+      notificationType: 'like',
+      notificationFor: userId,
+      notificationFrom: currentUser._id,
+      reel: reelId,
+    };
+
+    // Optimistically update the UI
+    const updatedReel = reels.find((reel) => reel._id === reelId);
+    if (updatedReel) {
+      const isLiked = updatedReel.likes.includes(currentUser._id);
+
+      // If already liked, remove like and delete notification
+      if (isLiked) {
+        try {
+          // Optimistically update likes in UI
+          const newLikes = updatedReel.likes.filter(
+            (id) => id !== currentUser._id
+          );
+          dispatch(updateReel({ ...updatedReel, likes: newLikes }));
+
+          // Sync with the server to unlike the post
+          await axios.put(`/api/reel/${reelId}`, { userId: currentUser._id });
+
+          // Delete the 'like' notification
+          await axios.delete('/api/notification', { data: notification });
+          console.log('Notification deleted successfully');
+        } catch (error) {
+          console.log('Error deleting notification or unliking post', error);
+
+          // Revert optimistic update if an error occurs
+          dispatch(updateReel(updatedReel));
+        }
+      } else {
+        // If not liked, add like and send notification
+        try {
+          // Optimistically update likes in UI
+          const newLikes = [...updatedReel.likes, currentUser._id];
+          dispatch(updateReel({ ...updatedReel, likes: newLikes }));
+
+          // Sync with the server to like the post
+          await axios.put(`/api/reel/${reelId}`, { userId: currentUser._id });
+
+          // Send the 'like' notification
+          const res = await axios.post('/api/notification', notification);
+          if (res.status === 200) {
+            console.log('Notification sent successfully');
+          }
+        } catch (error) {
+          console.log('Error sending notification or liking post', error);
+
+          // Revert optimistic update if an error occurs
+          dispatch(updateReel(updatedReel));
+        }
+      }
+    }
   };
 
   return (
@@ -31,22 +97,28 @@ export default function Page() {
             spaceBetween={10}
             slidesPerView={1}
             mousewheel={true}
-            speed={800}
+            speed={500}
             cssMode={false}
             onSlideChange={handleSlideChange}
             modules={[Mousewheel]}
             className="h-full w-full"
             initialSlide={0}
           >
-            {stories.map((item, index) => (
-              <SwiperSlide key={item._id} className="w-full h-full relative">
+            {reels.map((item, index) => (
+              <SwiperSlide
+                key={item._id}
+                className="w-full h-full relative"
+                onDoubleClick={() =>
+                  handelReelLikeAndUnlike(item._id, item.user._id)
+                }
+              >
                 {item.media.type === 'image' ? (
                   <img
-                  className="w-full h-full object-cover object-center rounded-xl"
-                  src={item.media.url}
-                  alt={`Slide ${index + 1}`}
-                />
-                ):(
+                    className="w-full h-full object-cover object-center rounded-xl"
+                    src={item.media.url}
+                    alt={`Slide ${index + 1}`}
+                  />
+                ) : (
                   <video
                     className="w-full h-full object-cover object-center rounded-xl"
                     src={item.media.url}
@@ -67,13 +139,60 @@ export default function Page() {
                       />
                     </div>
                     <div className="flex flex-col">
-                      <p className="text-white font-semibold">{item.user.userName}</p>
-                      <p className=' text-white'>This is discription</p>
+                      <p className="text-white font-semibold">
+                        {item.user.userName}
+                      </p>
+                      <p className=" text-white">{item.discription}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* //info about the rels like and comments */}
+                <div className=" absolute top-[60%] translate-y-[-50%] right-3 z-50">
+                  <div className=" flex flex-col gap-6">
+                    {/* likes */}
+                    <div
+                      className=" flex flex-col justify-center items-center cursor-pointer"
+                      onClick={() =>
+                        handelReelLikeAndUnlike(item._id, item.user._id)
+                      }
+                    >
+                      {currentUser && item.likes.includes(currentUser._id) ? (
+                        <img
+                          className="w-8 cursor-pointer"
+                          src="/icons/love.png"
+                          alt=""
+                          onClick={() =>
+                            handelReelLikeAndUnlike(item._id, item.user._id)
+                          }
+                        />
+                      ) : (
+                        <img
+                          className="w-8 cursor-pointer "
+                          src="/icons/wlike.png"
+                          alt=""
+                          onClick={() =>
+                            handelReelLikeAndUnlike(item._id, item.user._id)
+                          }
+                        />
+                      )}
+                      <p className=" text-white">{item.likes.length}</p>
+                    </div>
+                    {/* likes */}
+                    <div className="flex flex-col justify-center items-center">
+                      <img className="w-8" src="/icons/ccomment.png" alt="" />
+                      <p className=" text-white">{item.comments.length}</p>
+                    </div>
+                    {/* likes */}
+                    <div className="flex flex-col justify-center items-center">
+                      <img className="w-7" src="/icons/wsaved.png" alt="" />
+                    </div>
+                    {/* likes */}
+                    <div className="flex flex-col justify-center items-center">
+                      <img className="w-7" src="/icons/wdots.png" alt="" />
+                    </div>
+                  </div>
+                </div>
               </SwiperSlide>
             ))}
           </Swiper>

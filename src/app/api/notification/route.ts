@@ -1,10 +1,11 @@
 import dbConnect from '@/lib/db';
 import Notification from '@/models/notificationMode';
+import Reel from '@/models/reelModel';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   await dbConnect();
-  const { notificationFor, notificationFrom, notificationType, post } =
+  const { notificationFor, notificationFrom, notificationType, post ,reel} =
     await request.json();
   try {
     if (!notificationFor || !notificationFrom || !notificationType) {
@@ -31,6 +32,7 @@ export async function POST(request: Request) {
       notificationFrom: notificationFrom,
       notificationType: notificationType,
       post: post ? post : null, // Handle the case where post might be null or undefined
+      reel: reel ? reel : null,
     });
     
     if (notificationExist) {
@@ -44,7 +46,7 @@ export async function POST(request: Request) {
       notificationFor,
       notificationFrom,
       notificationType,
-      post,
+      reel,
     });
 
     await notification.save();
@@ -70,7 +72,8 @@ export async function GET(request: Request) {
     const allnotifications = await Notification.find()
       .sort({ createdAt: -1 })
       .populate('notificationFor notificationFrom', 'userName avatar')
-      .populate('post', 'media');
+      .populate('post', 'media')
+      .populate('reel', 'media')
 
     return NextResponse.json(
       { message: 'all notifications are', notification: allnotifications },

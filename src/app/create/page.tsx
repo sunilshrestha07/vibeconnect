@@ -26,7 +26,7 @@ export default function Page() {
 
   // Handle close
   const handleClose = () => {
-    router.push('/');
+    router.replace('/');
   };
 
   // Handle media selection
@@ -137,15 +137,13 @@ export default function Page() {
                     )}
                   </div>
 
-                  {selectedPostType === 'post' && (
-                    <div className=" w-full">
-                      <input
-                        className="w-full p-2 text-black outline-none rounded-lg"
-                        type="text"
-                        name=""
-                        id=""
-                        placeholder="Caption"
-                        onChange={(e)=>setDiscription(e.target.value)}
+                  {selectedPostType === 'post' || selectedPostType === 'reel' && (
+                    <div className=" w-full px-6">
+                      <textarea
+                        className="w-full h-16 p-2 rounded-xl mt-3"
+                        placeholder="Discription"
+                        value={discription}
+                        onChange={(e) => setDiscription(e.target.value)}
                       />
                     </div>
                   )}

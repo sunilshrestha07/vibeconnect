@@ -5,7 +5,7 @@ import React, { Suspense, useEffect } from 'react';
 import Posts from '@/components/Posts';
 import axios from 'axios';
 import { setStories } from './redux/storySlice';
-import { setPosts } from './redux/postSlice';
+import { setPosts, setReels } from './redux/postSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { setComments } from './redux/commentSlice';
 import Notification from '@/components/Notification';
@@ -57,12 +57,23 @@ export default function page() {
       console.log('Error while fetching notifications', error.message);
     }
   };
+  const fetchReels = async () => {
+    try {
+      const res = await axios.get('/api/reel');
+      if (res.status === 200) {
+        dispatch(setReels(res.data.allReel));
+      }
+    } catch (error: any) {
+      console.log('Error while fetching reels', error.message);
+    }
+  };
 
   useEffect(() => {
     fetchStories();
     fetchPosts();
     fetchComments();
     fetchNotifications();
+    fetchReels()
   });
 
   const isNotificationActive = useSelector(
