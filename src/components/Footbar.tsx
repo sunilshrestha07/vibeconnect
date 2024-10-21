@@ -12,7 +12,7 @@ export default function Footbar() {
     { name: 'Home', link: '/', icon: '/icons/home.png' },
     { name: 'Search', link: '/', icon: '/icons/search.png' },
     { name: 'Create', link: '/create', icon: '/icons/create.png' },
-    { name: 'Reels', link: '/', icon: '/icons/reel.png' },
+    { name: 'Reels', link: '/reel', icon: '/icons/reel.png' },
     { name: 'Profile', link: '/profile', icon: '/profile.jpg' },
   ];
 
@@ -29,7 +29,7 @@ export default function Footbar() {
         : dispatch(setSearchActive());
     }
 
-    if(name === 'Message' || name === 'Reels') {
+    if(name === 'Message') {
       toast.info(`${name} option not implemented yet`);
     }
   }

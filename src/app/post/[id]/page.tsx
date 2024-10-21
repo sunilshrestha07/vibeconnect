@@ -73,7 +73,6 @@ export default function Page() {
                   </div>
                 </div>
               )}
-              {/* <p>{selectedPost?._id}</p> */}
             </div>
             <div className=" w-full h-full row-span-2  sm:col-span-2">
               <div className="">

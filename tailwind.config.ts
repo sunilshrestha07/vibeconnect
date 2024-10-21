@@ -16,6 +16,9 @@ const config: Config = {
       fontFamily: {
         Italianno: ["Italianno", "cursive"],
       },
+      height: {
+        'screen-minus-2rem': 'calc(100vh - 5.5rem)',
+      },
     },
   },
   plugins: [],
