@@ -85,7 +85,7 @@ export default function Page() {
         user: currentUserId,
         media: {
           url: uploadedMediaUrl,
-          type: media?.type === 'video/mp4' ? 'video' : 'image',
+          type: media?.type === 'video/mp4' || media?.type === 'video/quicktime' ? 'video' : 'image',
         },
         discription: discription,
       };

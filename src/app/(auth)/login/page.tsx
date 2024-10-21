@@ -11,7 +11,7 @@ import { loginSuccess } from '@/app/redux/UserSlice';
 import { loginFail } from '@/app/redux/UserSlice';
 import { LoginInterface } from '@/app/interface/interface.declare';
 import { setStories } from '@/app/redux/storySlice';
-import { setPosts } from '@/app/redux/postSlice';
+import { setPosts, setReels } from '@/app/redux/postSlice';
 import Oauth from '@/components/Oauth';
 import { setnotifications } from '@/app/redux/notificaitionDataSlice';
 import { setComments } from '@/app/redux/commentSlice';
@@ -92,12 +92,23 @@ export default function Login() {
       console.log('Error while fetching notifications', error.message);
     }
   };
+  const fetchReels = async () => {
+    try {
+      const res = await axios.get('/api/reel');
+      if (res.status === 200) {
+        dispatch(setReels(res.data.allReel));
+      }
+    } catch (error: any) {
+      console.log('Error while fetching reels', error.message);
+    }
+  };
 
   useEffect(() => {
     fetchStories();
     fetchPosts();
     fetchComments();
     fetchNotifications();
+    fetchReels();
   });
 
   

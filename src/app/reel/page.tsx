@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -9,12 +9,15 @@ import 'swiper/css';
 import { useRouter } from 'next/navigation';
 import { updateReel } from '../redux/postSlice';
 import axios from 'axios';
+import ReactPlayer from 'react-player';
 
 export default function Page() {
   const reels = useSelector((state: RootState) => state.posts.reels);
   const router = useRouter();
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const dispatch = useDispatch();
+  const [isMuted, setIsMuted] = useState(true);
+  const [visiblePosts, setVisiblePosts] = useState<string[]>([]);
 
   const handleSlideChange = (swiper: any) => {
     console.log(`Current slide index: ${swiper.activeIndex}`);
@@ -86,6 +89,41 @@ export default function Page() {
       }
     }
   };
+  const videoRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+    //toggle mute
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+  };
+
+  // Function to observe when video comes into view
+  const observeVideo = useCallback(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visiblePostIds: string[] = [];
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            visiblePostIds.push(entry.target.id);
+          }
+        });
+        setVisiblePosts(visiblePostIds);
+      },
+      { threshold: 0.5 } // Trigger when 50% of the video is in view
+    );
+
+    // Attach observer to each video container
+    Object.values(videoRefs.current).forEach((videoRef) => {
+      if (videoRef) {
+        observer.observe(videoRef);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    observeVideo();
+  }, [observeVideo]);
 
   return (
     <div className="w-full h-screen-minus-2rem sm:h-screen flex justify-center overflow-hidden bg-black relative">
@@ -111,6 +149,7 @@ export default function Page() {
                 onDoubleClick={() =>
                   handelReelLikeAndUnlike(item._id, item.user._id)
                 }
+                onClick={toggleMute}
               >
                 {item.media.type === 'image' ? (
                   <img
@@ -119,14 +158,45 @@ export default function Page() {
                     alt={`Slide ${index + 1}`}
                   />
                 ) : (
-                  <video
-                    className="w-full h-full object-cover object-center rounded-xl"
-                    src={item.media.url}
-                    autoPlay
-                    loop
-                    muted
-                  />
+                  <div
+                      className="w-full h-full object-cover relative"
+                      onClick={toggleMute}
+                      ref={(el) => {
+                        videoRefs.current[item._id] = el; // Store the element in the ref
+                      }}
+                      id={item._id}
+                    >
+                      <ReactPlayer
+                        url={item.media.url}
+                        playing={visiblePosts.includes(item._id)}
+                        // playing={true} // Auto play
+                        loop={true} // Loop the video
+                        controls={false}
+                        muted={isMuted}
+                        config={{
+                          file: {
+                            attributes: {
+                              controlsList: 'nodownload', // disable download button
+                            },
+                          },
+                        }}
+                        width="100%"
+                        height="100%"
+                        onDoubleClick={() =>
+                          handelReelLikeAndUnlike(item._id, item.user._id)
+                        }
+                      />
+                    </div>
                 )}
+
+                {/* //toggle mute */}
+                <div className="absolute top-5 right-5 bg-white p-1 rounded-full">
+                  {isMuted ? (
+                    <img className="w-5" src="/icons/mute.png" alt="" />
+                  ) : (
+                    <img className="w-5" src="/icons/unmute.png" alt="" />
+                  )}
+                </div>
 
                 {/* User information */}
                 <div className="absolute bottom-0 left-0 flex gap-2 w-full z-50 px-3 py-5 backdrop-brightness-75 backdrop-blur-sm">
