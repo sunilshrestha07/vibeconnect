@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   await dbConnect();
-  const { notificationFor, notificationFrom, notificationType, post ,reel} =
+  const { notificationFor, notificationFrom, notificationType, post, reel } =
     await request.json();
   try {
     if (!notificationFor || !notificationFrom || !notificationType) {
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
       post: post ? post : null, // Handle the case where post might be null or undefined
       reel: reel ? reel : null,
     });
-    
+
     if (notificationExist) {
       return NextResponse.json(
         { message: 'Notification already exist so deleted' },
@@ -47,6 +47,7 @@ export async function POST(request: Request) {
       notificationFrom,
       notificationType,
       reel,
+      post
     });
 
     await notification.save();
@@ -73,10 +74,20 @@ export async function GET(request: Request) {
       .sort({ createdAt: -1 })
       .populate('notificationFor notificationFrom', 'userName avatar')
       .populate('post', 'media')
-      .populate('reel', 'media')
+      .populate('reel', 'media');
+
+    // Manually filter out post where the user is null
+    const filteredNotifications = allnotifications.filter((notification: any) => {
+      // Exclude notifications where reel is null
+      return notification.reel !== null && notification.post !== null && notification.notificationType !== null;
+    });
+
+    if (filteredNotifications.length === 0) {
+      return NextResponse.json({ message: 'No Post found' }, { status: 404 });
+    }
 
     return NextResponse.json(
-      { message: 'all notifications are', notification: allnotifications },
+      { message: 'all notifications are', notification: filteredNotifications },
       { status: 200 }
     );
   } catch (error: any) {
@@ -90,10 +101,11 @@ export async function GET(request: Request) {
 // delete the notification
 export async function DELETE(request: Request) {
   await dbConnect();
-  
+
   try {
     // Destructure request body to get the required fields
-    const { notificationFor, notificationFrom, notificationType, post } = await request.json();
+    const { notificationFor, notificationFrom, notificationType, post } =
+      await request.json();
 
     // Find the notification and delete it if it exists
     const deletedNotification = await Notification.findOneAndDelete({

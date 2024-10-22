@@ -11,6 +11,7 @@ import {
 import { loginSuccess } from '@/app/redux/UserSlice';
 import { RootState } from '@/app/redux/store';
 import { useDispatch, useSelector } from 'react-redux';
+import { removenotification } from '@/app/redux/notificaitionDataSlice';
 
 interface NotificationData {
   _id: string;
@@ -92,6 +93,19 @@ export default function Notification() {
     }
   };
 
+  //handel notification delete
+  // const handelDeleteNotification = async (id: string) => {
+  //   try {
+  //     const res = await axios.delete(`/api/notification/${id}`);
+  //     if (res.status === 200) {
+  //       console.log('Notification deleted successfully');
+  //       dispatch(removenotification(id));
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
+
   return (
     <>
       <div className="w-full sm:w-11/12 md:w-2/3 xl:w-1/2 h-screen sm:bg-none grid sm:grid-cols-3 fixed ">
@@ -110,7 +124,7 @@ export default function Notification() {
           {notifications.length > 0 ? (
             notifications.map((notification) => (
               <div
-                className="border-[1px] border-gray-300 rounded-lg p-2"
+                className="border-[1px] border-gray-300 rounded-lg p-2 relative"
                 key={notification._id}
               >
                 <div className="w-full flex items-center gap-1">
@@ -132,7 +146,9 @@ export default function Notification() {
                               <span className="font-semibold">
                                 {notification.notificationFrom.userName}
                               </span>{' '}
-                              {notification.post ? 'liked your post' : 'liked your reel'}
+                              {notification.post
+                                ? 'liked your post'
+                                : 'liked your reel'}
                             </p>
                             <p className="text-xs">
                               {moment(notification.createdAt)
@@ -143,9 +159,27 @@ export default function Notification() {
                           </div>
                         </div>
                         <div className="w-1/5">
-                          <div className="w-10 aspect-[9/10] overflow-hidden ">
+                          <div className="w-10 aspect-[9/10] overflow-hidden  ">
                             {notification.post ? (
-                              <div className=""></div>
+                              <div className="">
+                                <div className="">
+                                  {notification.post?.media.type === 'image' ? (
+                                    <img
+                                      className="w-full h-full object-cover"
+                                      src={notification.post?.media.url}
+                                      alt="post image"
+                                    />
+                                  ) : (
+                                    <video
+                                      src={notification.post?.media.url}
+                                      className="w-full h-full object-cover"
+                                      width={500}
+                                      height={500}
+                                      controls={false}
+                                    />
+                                  )}
+                                </div>
+                              </div>
                             ) : (
                               <div className="">
                                 {notification.reel?.media.type === 'image' ? (
@@ -189,12 +223,44 @@ export default function Notification() {
                           </div>
                         </div>
                         <div className="w-1/5">
-                          <div className="w-10 aspect-[9/10] overflow-hidden bg-yellow-500">
-                            <img
-                              className="w-full h-full object-cover"
-                              src={notification.post?.media.url}
-                              alt="post image"
-                            />
+                          <div className="w-10 aspect-[9/10] overflow-hidden ">
+                            {notification.post ? (
+                              <div className="">
+                                {notification.post?.media.type === 'image' ? (
+                                  <img
+                                    className="w-full h-full object-cover"
+                                    src={notification.post?.media.url}
+                                    alt="post image"
+                                  />
+                                ) : (
+                                  <video
+                                    src={notification.post?.media.url}
+                                    className="w-full h-full object-cover"
+                                    width={500}
+                                    height={500}
+                                    controls={false}
+                                  />
+                                )}
+                              </div>
+                            ) : (
+                              <div className="">
+                                {notification.reel?.media.type === 'image' ? (
+                                  <img
+                                    className="w-full h-full object-cover"
+                                    src={notification.reel?.media.url}
+                                    alt="post image"
+                                  />
+                                ) : (
+                                  <video
+                                    src={notification.reel?.media.url}
+                                    className="w-full h-full object-cover"
+                                    width={500}
+                                    height={500}
+                                    controls={false}
+                                  />
+                                )}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -236,6 +302,11 @@ export default function Notification() {
                     )}
                   </div>
                 </div>
+
+                {/* //delete notification */}
+                {/* <div className=" absolute top-5 right-0">
+                  <img className='w-5' src="/icons/delete.png" alt="" onClick={() => handelDeleteNotification(notification._id)} />
+                </div> */}
               </div>
             ))
           ) : (

@@ -11,9 +11,8 @@ import { loginSuccess, logout } from '@/app/redux/UserSlice';
 import { SingleUser, User } from '@/app/interface/interface.declare';
 import { toast } from 'react-toastify';
 import { set } from 'mongoose';
-import ProfileLoadingScreen from '@/components/ProfileLoadingScreen';
 
-export default function page() {
+export default function ProfileLoadingScreen() {
   const router = useRouter();
   const [user, setUser] = useState<User>();
   const dispatch = useDispatch();
@@ -86,11 +85,6 @@ export default function page() {
 
   return (
     <>
-      {isLoading ? (
-        <div className="w-full h-screen">
-          <ProfileLoadingScreen/>
-        </div>
-      ) : (
         <div className="w-full h-full flex justify-center px-4 sm:px-0">
           {/* profile section */}
           <div className=" w-full  sm:w-10/12 h-full ">
@@ -99,38 +93,18 @@ export default function page() {
                 <div className=" flex gap-4 sm:gap-16 md:gap-24 mt-10 text-sm md:text-xl ">
                   {/* avatar */}
                   <div className="w-28 sm:w-40 aspect-square rounded-full overflow-hidden ">
-                    <img
-                      className="w-full h-full object-cover object-center"
-                      src={user?.avatar || 'avatar.png'}
-                      alt="user avatar"
-                    />
+                   <div className="w-full h-full bg-gray-500 animate-pulse"></div>
                   </div>
                   <div className=" items-center justify-center flex flex-col gap-2 ">
                     <div className=" flex items-center gap-2">
                       <div className="">
-                        <p className=" text-xs sm:text-base font-semibold px-1 sm:px-3 py-1 rounded-lg bg-gray-300">
-                          {user?.userName}
-                        </p>
-                      </div>
-                      {/* <div className="">
-                      <p className="text-xs sm:text-base font-semibold px-1 sm:px-3 py-1 rounded-lg bg-gray-300">
-                        Edit Profile
-                      </p>
-                    </div> */}
-                      <div
-                        className="text-xs sm:text-base font-semibold px-1 sm:px-3 py-1 rounded-lg bg-gray-300 cursor-pointer"
-                        onClick={handelFollowUser}
-                      >
-                        {user && currentUser?.following?.includes(user?._id)
-                          ? 'Unfollow'
-                          : 'Follow'}
+                        <div className="w-10 h-10 bg-gray-500 animate-pulse"></div>
                       </div>
                     </div>
                     {/* post, followers and following */}
-                    <div className="mt-2  w-full flex justify-between font-semibold text-xs sm:text-base">
+                    {/* <div className="mt-2  w-full flex justify-between font-semibold text-xs sm:text-base">
                       <div className=" flex flex-col justify-center items-center">
-                        <p>{totalpost}</p>
-                        <p>Posts</p>
+                        
                       </div>
                       <div className="flex flex-col justify-center items-center">
                         <p>{user?.followers?.length || 0}</p>
@@ -140,13 +114,13 @@ export default function page() {
                         <p>{user?.following?.length || 0}</p>
                         <p>Following</p>
                       </div>
-                    </div>
+                    </div> */}
                     {/* bio */}
-                    <div className="w-full flex justify-start ">
+                    {/* <div className="w-full flex justify-start ">
                       <p className="text-xs sm:text-base font-semibold py-1 rounded-lg ">
                         This is {user?.userName}'s bio
                       </p>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
@@ -155,7 +129,7 @@ export default function page() {
             {/* posts and saved */}
             <div className="w-full   flex flex-col">
               <div className=" w-full flex justify-center ">
-                <div className="  flex gap-24">
+                {/* <div className="  flex gap-24">
                   {links.map((link, index) => (
                     <div
                       className={`flex gap-2 text-sm sm:text-base  items-center cursor-pointer  py-3  ${
@@ -172,7 +146,7 @@ export default function page() {
                       <p className="">{link.name}</p>
                     </div>
                   ))}
-                </div>
+                </div> */}
               </div>
               <div className="w-full ">
                 {selectedLink === 'Posts' && <UserPosts userId={user?._id} />}
@@ -180,7 +154,6 @@ export default function page() {
             </div>
           </div>
         </div>
-      )}
     </>
   );
 }

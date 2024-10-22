@@ -7,9 +7,10 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Mousewheel } from 'swiper/modules';
 import 'swiper/css';
 import { useRouter } from 'next/navigation';
-import { updateReel } from '../redux/postSlice';
+import { removeReel, updateReel } from '../redux/postSlice';
 import axios from 'axios';
 import ReactPlayer from 'react-player';
+import { toast } from 'react-toastify';
 
 export default function Page() {
   const reels = useSelector((state: RootState) => state.posts.reels);
@@ -18,6 +19,7 @@ export default function Page() {
   const dispatch = useDispatch();
   const [isMuted, setIsMuted] = useState(true);
   const [visiblePosts, setVisiblePosts] = useState<string[]>([]);
+  const [isDeleteActive, setIsDeleteActive] = useState(false);
 
   const handleSlideChange = (swiper: any) => {
     console.log(`Current slide index: ${swiper.activeIndex}`);
@@ -91,7 +93,7 @@ export default function Page() {
   };
   const videoRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-    //toggle mute
+  //toggle mute
   const toggleMute = () => {
     setIsMuted(!isMuted);
   };
@@ -124,6 +126,25 @@ export default function Page() {
   useEffect(() => {
     observeVideo();
   }, [observeVideo]);
+
+  //toggle delte
+  const toggleDelete = () => {
+    setIsDeleteActive(!isDeleteActive);
+  };
+
+  //handelDeltereel
+  const deleteReel = async (reelId: string) => {
+    try {
+      const res = await axios.delete(`/api/reel/${reelId}`);
+      if (res.status === 200) {
+        setIsDeleteActive(false);
+        dispatch(removeReel(reelId));
+      }
+    } catch (error:any) {
+      toast.error('Error deleting reel');
+      console.log(`Error deleting reel: ${error.message}`);
+    }
+  }
 
   return (
     <div className="w-full h-screen-minus-2rem sm:h-screen flex justify-center overflow-hidden bg-black relative">
@@ -159,34 +180,34 @@ export default function Page() {
                   />
                 ) : (
                   <div
-                      className="w-full h-full object-cover relative"
-                      onClick={toggleMute}
-                      ref={(el) => {
-                        videoRefs.current[item._id] = el; // Store the element in the ref
-                      }}
-                      id={item._id}
-                    >
-                      <ReactPlayer
-                        url={item.media.url}
-                        playing={visiblePosts.includes(item._id)}
-                        // playing={true} // Auto play
-                        loop={true} // Loop the video
-                        controls={false}
-                        muted={isMuted}
-                        config={{
-                          file: {
-                            attributes: {
-                              controlsList: 'nodownload', // disable download button
-                            },
+                    className="w-full h-full object-cover relative"
+                    onClick={toggleMute}
+                    ref={(el) => {
+                      videoRefs.current[item._id] = el; // Store the element in the ref
+                    }}
+                    id={item._id}
+                  >
+                    <ReactPlayer
+                      url={item.media.url}
+                      playing={visiblePosts.includes(item._id)}
+                      // playing={true} // Auto play
+                      loop={true} // Loop the video
+                      controls={false}
+                      muted={isMuted}
+                      config={{
+                        file: {
+                          attributes: {
+                            controlsList: 'nodownload', // disable download button
                           },
-                        }}
-                        width="100%"
-                        height="100%"
-                        onDoubleClick={() =>
-                          handelReelLikeAndUnlike(item._id, item.user._id)
-                        }
-                      />
-                    </div>
+                        },
+                      }}
+                      width="100%"
+                      height="100%"
+                      onDoubleClick={() =>
+                        handelReelLikeAndUnlike(item._id, item.user._id)
+                      }
+                    />
+                  </div>
                 )}
 
                 {/* //toggle mute */}
@@ -248,18 +269,31 @@ export default function Page() {
                       )}
                       <p className=" text-white">{item.likes.length}</p>
                     </div>
-                    {/* likes */}
+                    {/* comment icon */}
                     <div className="flex flex-col justify-center items-center">
                       <img className="w-8" src="/icons/ccomment.png" alt="" />
                       <p className=" text-white">{item.comments.length}</p>
                     </div>
-                    {/* likes */}
+                    {/* saved icon */}
                     <div className="flex flex-col justify-center items-center">
                       <img className="w-7" src="/icons/wsaved.png" alt="" />
                     </div>
-                    {/* likes */}
-                    <div className="flex flex-col justify-center items-center">
-                      <img className="w-7" src="/icons/wdots.png" alt="" />
+                    {/* if current user delete option */}
+                    <div className="relative">
+                      <div className="flex flex-col justify-center items-center cursor-pointer">
+                        {currentUser?._id === item.user._id ? (
+                          <img className="w-7 " src="/icons/wdots.png" alt=""  onClick={toggleDelete}/>
+                        ) : (
+                          <img className="w-7 " src="/icons/wdots.png" alt="" />
+                        )}
+                      </div>
+
+                      {/* //delete component */}
+                      {isDeleteActive && (
+                        <div className=" absolute top-1 right-10" >
+                          <p className="text-red-500 font-semibold cursor-pointer" onClick={()=>deleteReel(item._id)}>Delete</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
